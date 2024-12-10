@@ -1,5 +1,5 @@
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(":memory:"); // Use ':memory:' for an in-memory DB, or 'users.db' for a persistent file.
+const db = new sqlite3.Database("./databases/user.db"); // Use ':memory:' for an in-memory DB, or 'users.db' for a persistent file.
 
 db.serialize(() => {
   // Create users table
