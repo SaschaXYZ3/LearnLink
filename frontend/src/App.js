@@ -5,12 +5,14 @@ import Hero from "./components/Hero";
 import Header from "./components/header";
 import About from "./components/About";
 import Course from "./components/course";
+import AuthForm from "./components/AuthForm";
 
 function App() {
   return (
     <div>
       <Header />
       <Hero />
+      <AuthForm />
       <div className="course-container">
         <Course
           title="Math"

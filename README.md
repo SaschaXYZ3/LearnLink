@@ -1,23 +1,46 @@
 # LearnLink
 
-
 # How to start a Webserver:
+
+start webserver static
+
+```bash
+npm start
+```
+
+start webserver witrh auto update if some changes are made
 
 ```bash
 npm start nodemon
-````
+```
 
 ## In case it does not work:
 
+Do this in frontend directory
+
 ```bash
 npm install --save-dev nodemon #this installs it locally in the repo
-
-node server.js #alternatively you can run this instead
+#initialize npm packet manager
+npm init -y
+#install react
+npm install react-scripts --save
 ```
 
-If all of that fails you need to install npm first and init the project. However since I commited it for all, it should not be required.
+Maybe some vulnerabilities appear and the Webserver doesnt start, try this 1-2 times
 
-npm install
+```
+#Update - vulnerabilities
+npm audit fix --force
+#redo if more than 2 vulnerabilities appear
+```
+
+## install additional packages
+
+bcrypt to hash passwords for storing in database\
+sqlite3 as database\
+body-parser to compile to SQL-querries
+
+```
 npm init -y
-
-
+npm install express sqlite3 body-parser cors bcrypt
+```
