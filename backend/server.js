@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const db = require("./database");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = 5000;
@@ -16,12 +17,35 @@ app.get("/api/message", (req, res) => {
   res.json({ message: "Hello from the backend!" });
 });
 
+// Validation function for register input
+const validateRegisterInput = ({ username, email, password }) => {
+  if (!username || !email || !password) {
+    return "All fields are required";
+  }
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long";
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    return "Invalid email format";
+  }
+  return null;
+};
+
 // Register endpoint
 app.post("/register", (req, res) => {
   const { username, email, password } = req.body;
+
+  // Validate input
+  const validationError = validateRegisterInput({ username, email, password });
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
+  }
+
+  const hashedPassword = bcrypt.hashSync(password, 8); // Hash password
   const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
 
-  db.run(query, [username, email, password], function (err) {
+  // Insert user into the database
+  db.run(query, [username, email, hashedPassword], function (err) {
     if (err) {
       if (err.code === "SQLITE_CONSTRAINT") {
         return res.status(400).json({ error: "Username already exists" });
@@ -35,16 +59,32 @@ app.post("/register", (req, res) => {
 // Login endpoint
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
 
-  db.get(query, [username, password], (err, row) => {
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: "Both username and password are required" });
+  }
+
+  const query = `SELECT * FROM users WHERE username = ?`;
+
+  // Fetch user from database by username
+  db.get(query, [username], (err, user) => {
     if (err) {
       return res.status(500).json({ error: "Internal server error" });
     }
-    if (!row) {
+
+    if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    res.json({ id: row.id, username: row.username, email: row.email });
+
+    // Compare hashed password with the provided password
+    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    if (!passwordIsValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    res.json({ id: user.id, username: user.username, email: user.email });
   });
 });
 
