@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Header() {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">MyApp</a>
+        <Link className="navbar-brand" to="#">MyApp</Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -16,16 +17,20 @@ function Header() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link" href="#">Home</a>
+              <Link className="nav-link" to="/">Home</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#about">About</a>
+              <Link className="nav-link" to="/about">About</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#contact">Contact</a>
+              <Link className="nav-link" to="#contact">Contact</Link>
             </li>
           </ul>
         </div>
+        <div className="ms-auto"> {/* ms-auto für rechtsbündige Buttons */}
+            <Link to="/" className="btn btn-primary me-2">Login</Link>
+            <Link to="/" className="btn btn-secondary">Register</Link>
+          </div>
       </div>
     </nav>
   );

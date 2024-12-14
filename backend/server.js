@@ -3,6 +3,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const db = require("./database");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY =
+  "XdvZ1GSeTsE48kPKCo3zqkZb2sLFnUbsfoqwFL2SN4pn6EcEyFS9IEI3evPvwo59";
 
 const app = express();
 const PORT = 5000;
@@ -15,6 +18,31 @@ app.use(bodyParser.json());
 // API Endpoint
 app.get("/api/message", (req, res) => {
   res.json({ message: "Hello from the backend!" });
+});
+
+// JWT verification middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(403).json({ error: "No token provided" });
+  }
+
+  const token = authHeader.split(" ")[1]; // Bearer <token>
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+
+    req.user = user; // Attach user data to request
+    next(); // Proceed to the next middleware or route handler
+  });
+};
+
+// Protected route example --> use for div. subpages
+app.get("/api/protected", authenticateToken, (req, res) => {
+  res.json({ message: "This is a protected route", user: req.user });
 });
 
 // Validation function for register input
@@ -84,7 +112,19 @@ app.post("/login", (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    res.json({ id: user.id, username: user.username, email: user.email });
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, username: user.username }, // Payload
+      SECRET_KEY, // Secret key
+      { expiresIn: 86400 } // Token validity
+    );
+
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      token,
+    });
   });
 });
 
