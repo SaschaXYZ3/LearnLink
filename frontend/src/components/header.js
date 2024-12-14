@@ -27,6 +27,10 @@ function Header() {
             </li>
           </ul>
         </div>
+        <div className="ms-auto"> {/* ms-auto für rechtsbündige Buttons */}
+            <Link to="/" className="btn btn-primary me-2">Login</Link>
+            <Link to="/" className="btn btn-secondary">Register</Link>
+          </div>
       </div>
     </nav>
   );
