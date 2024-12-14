@@ -50,3 +50,9 @@ npm install express sqlite3 body-parser cors bcrypt
 ```
 npm install jsonwebtoken
 ```
+
+## install react-router-dom for routing
+
+```
+npm install react-router-dom
+```
