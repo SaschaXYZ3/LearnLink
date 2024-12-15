@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import "../AuthForm.css";
 
 const AuthForm = () => {
+
     const location = useLocation();
     const [isLogin, setIsLogin] = useState(true); // Default: Login
     const [formData, setFormData] = useState({

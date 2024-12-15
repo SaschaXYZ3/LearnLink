@@ -2,11 +2,12 @@
 
 .auth-container {
     max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 50px auto;
+    padding: 30px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #d6d1f5;
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
   }
   
   
@@ -53,6 +54,7 @@
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
+    
   }
   
   .submit-button:hover {
@@ -77,3 +79,6 @@
   .toggle-button:hover {
     color: #0056b3;
   }
+
+
+
