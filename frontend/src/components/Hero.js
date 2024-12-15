@@ -1,12 +1,26 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import "../Hero.css";
 
 function Hero() {
   return (
-    <div className="text-center mt-5">
-      <h1 className="display-4">Welcome to LearnLink!</h1>
-      <p className="lead">Your journey to learning starts here</p>
-    </div>
+    <section className="hero">
+      {/* Left Content */}
+      <div className="hero-content">
+        <h1 className="hero-title">LearnLink</h1>
+        <p className="vertical-text">THE ULTIMATE TUTORING PLATFORM </p>
+      </div>
+
+      {/* Right Image Section */}
+      <div className="hero-image"></div>
+
+      {/* Social Links */}
+      <div className="social-links">
+        <a href="#"><i className="fab fa-youtube"></i></a>
+        <a href="#"><i className="fab fa-facebook-f"></i></a>
+        <a href="#"><i className="fab fa-instagram"></i></a>
+        <a href="#"><i className="fab fa-twitter"></i></a>
+      </div>
+    </section>
   );
 }
 

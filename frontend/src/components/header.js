@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
+import "../Header.css";
 function Header() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("");  //might be changed to NULL instead?
 
   // Überprüfen, ob der Benutzer eingeloggt ist, wenn die Komponente geladen wird
   useEffect(() => {
@@ -24,63 +24,54 @@ function Header() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-      <div className="container">
-        <Link className="navbar-brand" to="/">MyApp</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/about">About</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="#contact">Contact</Link>
-            </li>
-          </ul>
-          <ul className="navbar-nav ms-auto">
-            {username ? (
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp"
-                    className="rounded-circle"
-                    height="30"
-                    alt="User Avatar"
-                    loading="lazy"
-                  />
-                  <span className="ms-2">{username}</span>
-                </a>
-                <ul className="dropdown-menu">
-                  <li><Link className="dropdown-item" to="#">My Profile</Link></li>
-                  <li><Link className="dropdown-item" to="#">Settings</Link></li>
-                  <li><button className="dropdown-item" onClick={handleLogout}>Logout</button></li>
-                </ul>
-              </li>
-            ) : (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/login">Login</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/register">Register</Link>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
+    <header className="header">
+      {/* Logo Section */}
+      <div className="logo">
+        <Link to="/">LearnLink</Link>
       </div>
-    </nav>
+
+      {/* Navigation Links */}
+      <nav className="nav">
+        <Link to="/">HOME</Link>
+        <Link to="/about">ABOUT</Link>
+        <Link to="/events">TOOLS</Link>
+        <Link to="/connect">CONNECT</Link>
+      </nav>
+
+      {/* User Dropdown or Auth Links */}
+      <div className="auth-section">
+        {username ? (
+          <div className="dropdown">
+            <button className="dropdown-toggle">
+              <img
+                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp"
+                className="rounded-circle"
+                height="30"
+                alt="User Avatar"
+              />
+              <span className="ms-2">{username}</span>
+            </button>
+            <div className="dropdown-menu">
+              <Link className="dropdown-item" to="#">My Profile</Link>
+              <Link className="dropdown-item" to="#">Settings</Link>
+              <button className="dropdown-item" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Link to="/login" className="subscribe-btn">Login</Link>
+            <Link to="/register" className="subscribe-btn">Register</Link>
+          </>
+        )}
+      </div>
+
+      {/* Hamburger Menu for Smaller Screens */}
+      <button className="navbar-toggler" type="button">
+        <span className="navbar-toggler-icon"></span>
+      </button>
+    </header>
   );
     
     /*

@@ -1,0 +1,137 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Arial", sans-serif;
+  }
+  
+  /* Header Styling */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #FFFCF9; /* Cremeweiß */
+    color: #2C2C2C; /* Dunkelgrau */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #EFEFEF; /* Dezente Trennlinie */
+  }
+  
+  .logo a {
+    font-size: 1.8rem;
+    color: #2C2C2C; /* Dunkelgrau */
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav a {
+    color: #8E8E8E; /* Hellgrau */
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .nav a:hover {
+    color: #2C2C2C; /* Dunkelgrau */
+  }
+  
+  /* Auth Section */
+  .auth-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .subscribe-btn {
+    color: #2C2C2C; /* Dunkelgrau */
+    text-decoration: none;
+    border: 1px solid #8E8E8E; /* Dezenter Rand */
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .subscribe-btn:hover {
+    background-color: #EFEFEF; /* Hellgrau */
+    color: #2C2C2C; /* Dunkelgrau */
+  }
+  
+  /* Dropdown Styling */
+  .dropdown {
+    position: relative;
+  }
+  
+  .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #2C2C2C; /* Dunkelgrau */
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #FFFCF9; /* Cremeweiß */
+    border: 1px solid #EFEFEF; /* Hellgrauer Rand */
+    padding: 0.5rem 0;
+    display: none;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: #2C2C2C; /* Dunkelgrau */
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #EFEFEF; /* Hellgrau */
+    color: #2C2C2C;
+  }
+  
+  /* Hamburger Menu */
+  .navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .navbar-toggler-icon {
+    width: 25px;
+    height: 3px;
+    background-color: #2C2C2C; /* Dunkelgrau */
+    display: block;
+    margin: 5px 0;
+    border-radius: 2px;
+  }
+  
+  @media (max-width: 768px) {
+    .nav {
+      display: none; /* Hide nav on small screens */
+    }
+  
+    .navbar-toggler {
+      display: block;
+    }
+  }

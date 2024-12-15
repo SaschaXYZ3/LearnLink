@@ -1,0 +1,92 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  color: #2C2C2C;
+  background: #FDFDFD;
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  height: 100vh;
+  position: relative;
+  background: linear-gradient(to right, #FFFCF9 50%, #EFEFEF 50%);
+}
+
+.hero-image {
+  flex: 1;
+  background: url(./images/school.jpg) no-repeat center center/cover;
+  position: relative;
+}
+
+.hero-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(93, 77, 77, 0.3);
+  z-index: 1;
+}
+
+.hero-content,
+.social-links {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 3rem;
+}
+
+.hero-title {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #2C2C2C;
+}
+
+.vertical-text {
+  position: absolute;
+  left: 0;
+  bottom: 50%;
+  transform: translateY(50%) rotate(-90deg);
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+  color: #8E8E8E;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-left: 1rem;
+}
+
+.social-links {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.social-links a {
+  color: #ffffff;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+  color: #2C2C2C;
+}
