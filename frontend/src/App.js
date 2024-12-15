@@ -14,8 +14,9 @@ function App() {
       <Routes>
         {/* Define routes */}
         <Route path="/" element={<Hero />} />
-        <Route path="/auth" element={<AuthForm />} />
         <Route path="/about" element={<About />} />
+        <Route path="/login" element={<AuthForm />}/>
+        <Route path="/register" element={<AuthForm />}/>
       </Routes>
     </Router>
   );

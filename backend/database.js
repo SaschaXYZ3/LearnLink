@@ -8,13 +8,18 @@ const db = new sqlite3.Database("../databases/user.db", (err) => {
 });
 
 db.serialize(() => {
+  // drop the old users table
+  db.run("DROP TABLE IF EXISTS users");
+  
   // Create users table
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE,
       email TEXT,
-      password TEXT
+      password TEXT,
+      role TEXT DEFAULT 'student',
+      birthDate TEXT
     )
   `);
 });

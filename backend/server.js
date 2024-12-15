@@ -61,7 +61,7 @@ const validateRegisterInput = ({ username, email, password }) => {
 
 // Register endpoint
 app.post("/register", (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role, birthDate } = req.body;
 
   // Validate input
   const validationError = validateRegisterInput({ username, email, password });
@@ -70,19 +70,21 @@ app.post("/register", (req, res) => {
   }
 
   const hashedPassword = bcrypt.hashSync(password, 8); // Hash password
-  const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
+  const query = `INSERT INTO users (username, email, password, role, birthDate) VALUES (?, ?, ?, ?, ?)`;
 
   // Insert user into the database
-  db.run(query, [username, email, hashedPassword], function (err) {
+db.run(query, [username, email, hashedPassword, role, birthDate], function (err) {
     if (err) {
+      console.error("Database error:", err.message); 
       if (err.code === "SQLITE_CONSTRAINT") {
         return res.status(400).json({ error: "Username already exists" });
       }
       return res.status(500).json({ error: "Internal server error" });
     }
-    res.status(201).json({ id: this.lastID, username, email });
+    res.status(201).json({ id: this.lastID, username, email, role, birthDate });
   });
 });
+
 
 // Login endpoint
 app.post("/login", (req, res) => {
@@ -123,6 +125,8 @@ app.post("/login", (req, res) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      role: user.role,         
+      birthDate: user.birthDate, 
       token,
     });
   });
