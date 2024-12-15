@@ -56,3 +56,10 @@ npm install jsonwebtoken
 ```
 npm install react-router-dom
 ```
+
+
+## install fortawesome for twitter, insta, etc. icons
+
+```
+npm install @fortawesome/fontawesome-free
+```
