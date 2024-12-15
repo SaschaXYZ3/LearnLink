@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Header() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+
+  // Überprüfen, ob der Benutzer eingeloggt ist, wenn die Komponente geladen wird
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setIsLoggedIn(true);
+      setUsername(storedUsername);
+    }
+  }, []);
+
+  // Abmelden-Funktion
+  const handleLogout = () => {
+    localStorage.removeItem("username"); // Entfernen des Usernames aus dem localStorage
+    setIsLoggedIn(false); // Setzt den Status zurück
+    setUsername(""); // Löscht den Usernamen
+    window.location.href = "/"; 
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
@@ -27,10 +48,21 @@ function Header() {
             </li>
           </ul>
         </div>
-        <div className="ms-auto"> {/* ms-auto für rechtsbündige Buttons */}
-            <Link to="/login" className="btn btn-primary me-2">Login</Link>
-            <Link to="/register" className="btn btn-secondary">Register</Link>
-          </div>
+        <div className="ms-auto">
+          {isLoggedIn ? (
+            <div>
+              <span className="navbar-text me-2">Welcome, {username}</span>
+              <button onClick={handleLogout} className="btn btn-danger">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-primary me-2">Login</Link>
+              <Link to="/register" className="btn btn-secondary">Register</Link>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );

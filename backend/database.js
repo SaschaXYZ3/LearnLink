@@ -9,7 +9,7 @@ const db = new sqlite3.Database("../databases/user.db", (err) => {
 
 db.serialize(() => {
   // drop the old users table
-  db.run("DROP TABLE IF EXISTS users");
+  //db.run("DROP TABLE IF EXISTS users");
   
   // Create users table
   db.run(`

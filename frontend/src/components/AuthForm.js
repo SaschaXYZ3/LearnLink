@@ -32,10 +32,10 @@ const AuthForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-     // Überprüfe, ob die Passwörter übereinstimmen
+     // check if the passwords are the same
      if (!isLogin && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
-      return; // Verhindere das Absenden des Formulars
+      return; // prevent the form from being sent
     }
     const url = isLogin
       ? "http://localhost:5000/login"
@@ -55,11 +55,16 @@ const AuthForm = () => {
       }
 
       const data = await response.json();
+       // Speichern des Usernames im localStorage
+      localStorage.setItem("username", data.username);
+
       alert(
-        isLogin
-          ? `Welcome back, ${data.username}!`
-          : `User ${data.username} registered successfully!`
-      );
+        isLogin 
+           ? `Welcome back, ${data.username}!` 
+           : `User ${data.username} registered successfully!`);
+      // Umleitung nach der Registrierung oder Login
+      window.location.href = "/"; 
+   
     } catch (error) {
       console.error("Error details:", error); // Detaillierte Fehlermeldung
       alert("Error connecting to server.");
