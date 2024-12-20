@@ -1,0 +1,46 @@
+.testimonials {
+    padding: 3rem 1rem;
+    background-color: #FFFCF9; /* Cremeweiß passend zu Palette 4 */
+    text-align: center;
+  }
+  
+  .testimonials-title {
+    font-size: 2rem;
+    color: #2C2C2C; /* Dunkelgrau */
+    margin-bottom: 2rem;
+  }
+  
+  .testimonials-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+  
+  .testimonial-card {
+    background: #EFEFEF; /* Hellgrau */
+    border-radius: 10px;
+    padding: 1.5rem;
+    max-width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .testimonial-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    border: 2px solid #2C2C2C; /* Dunkelgrau */
+  }
+  
+  .testimonial-text {
+    font-size: 1rem;
+    color: #2C2C2C;
+    margin-bottom: 1rem;
+  }
+  
+  .testimonial-name {
+    font-size: 1.1rem;
+    color: #8E8E8E; /* Hellgrau */
+  }

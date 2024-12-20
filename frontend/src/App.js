@@ -1,24 +1,53 @@
-import React from "react";
+import React, { useRef } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Hero from "./components/Hero";
 import Header from "./components/header";
 import About from "./components/About";
-import Course from "./components/course";
 import AuthForm from "./components/AuthForm";
+import Testimonials from "./components/testimonials";
+import ContactForm from "./components/ContactForm";
+import Tools from "./components/Tools"; 
+import Forum from "./components/Forum";
 
 function App() {
+  const contactFormRef = useRef(null);
+
+  const scrollToContact = () => {
+    contactFormRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <Router>
-      <Header /> {/* This can stay outside of routing if it’s common */}
+      <Header />
       <Routes>
-        {/* Define routes */}
-        <Route path="/" element={<Hero />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/login" element={<AuthForm />}/>
-        <Route path="/register" element={<AuthForm />}/>
+        {/* Root Page */}
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
+              <Testimonials />
+              <section ref={contactFormRef}>
+                <ContactForm />
+              </section>
+            </>
+          }
+        />
+        {/* About Page */}
+        <Route
+          path="/about"
+          element={<About scrollToContact={scrollToContact} />}
+        />
+        {/* Tools Page */}
+        <Route path="/tools" element={<Tools />} />
+        {/* Login and Register Pages */}
+        <Route path="/login" element={<AuthForm />} />
+        <Route path="/register" element={<AuthForm />} />
+        <Route path="/connect" element={<Forum />} />
       </Routes>
     </Router>
   );
 }
+
 export default App;

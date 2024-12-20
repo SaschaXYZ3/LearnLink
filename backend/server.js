@@ -96,6 +96,46 @@ app.post("/login", (req, res) => {
       .json({ error: "Both username and password are required" });
   }
 
+  // Contact Form Submission Endpoint
+app.post("/contact", (req, res) => {
+  const { name, email, message } = req.body;
+
+  // Validate input
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const query = `INSERT INTO contact_requests (name, email, message) VALUES (?, ?, ?)`;
+
+  // Save contact form data into the database
+  db.run(query, [name, email, message], function (err) {
+    if (err) {
+      console.error("Database error:", err.message);
+      return res.status(500).json({ error: "Failed to save the contact request" });
+    }
+
+    res.status(201).json({ message: "Contact request saved successfully!" });
+  });
+});
+
+/* TO BE REENABLED ONCE ADMIN PANEL IS LIVE
+
+// Retrieve all contact form submissions
+app.get("/contact", (req, res) => {
+  const query = `SELECT * FROM contact_requests ORDER BY date DESC`;
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error("Database error:", err.message);
+      return res.status(500).json({ error: "Failed to retrieve contact requests" });
+    }
+
+    res.status(200).json(rows);
+  });
+});
+
+*/
+
   const query = `SELECT * FROM users WHERE username = ?`;
 
   // Fetch user from database by username

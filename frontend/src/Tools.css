@@ -1,0 +1,83 @@
+/* General Styling */
+.tools-page {
+    padding: 4rem 2rem;
+    background: #fdfdfd; /* Neutral background */
+    text-align: center;
+    color: #2c2c2c; /* Dark text */
+  }
+  
+  .tools-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .tools-subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    color: #8e8e8e; /* Light gray */
+  }
+  
+  /* Grid Layout */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    justify-items: center;
+  }
+  
+  /* Tool Card */
+  .tool-card {
+    background: #ffffff;
+    border: 2px solid #eaeaea;
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .tool-card:hover {
+    transform: translateY(-5px); /* Lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+    border-color: #c09465; /* Accent color on hover */
+  }
+  
+  /* Tool Logo */
+  .tool-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1rem;
+  }
+  
+  /* Tool Name */
+  .tool-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Tool Description */
+  .tool-description {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #555; /* Subtle text color */
+  }
+  
+  /* Link Button */
+  .tool-link {
+    display: inline-block;
+    background: #2c2c2c; /* Dark button */
+    color: #ffffff;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .tool-link:hover {
+    background: #8e8e8e; /* Light gray hover */
+  }

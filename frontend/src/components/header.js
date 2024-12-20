@@ -34,7 +34,7 @@ function Header() {
       <nav className="nav">
         <Link to="/">HOME</Link>
         <Link to="/about">ABOUT</Link>
-        <Link to="/events">TOOLS</Link>
+        <Link to="/tools">TOOLS</Link>
         <Link to="/connect">CONNECT</Link>
       </nav>
 

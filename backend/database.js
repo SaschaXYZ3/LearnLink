@@ -22,6 +22,16 @@ db.serialize(() => {
       birthDate TEXT
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS contact_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      message TEXT NOT NULL,
+      date TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 });
 
 module.exports = db;

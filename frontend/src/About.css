@@ -1,0 +1,112 @@
+.about {
+    background: #FDFDFD; /* Neutral background */
+    padding: 5rem 2rem;
+    color: #2C2C2C; /* Dark Gray */
+  }
+  
+  .about-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  
+  .about-image {
+    flex: 1;
+    max-width: 500px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .about-content {
+    flex: 1.5;
+  }
+  
+  .about-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #2C2C2C;
+  }
+  
+  .about-subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    color: #8E8E8E; /* Light Gray */
+  }
+  
+  .about-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  
+  .about-values {
+    margin-top: 2rem;
+  }
+  
+  .about-values-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2C2C2C;
+  }
+  
+  .about-values-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .about-values-list li {
+    background: #f7f7f7; /* Soft gray background */
+    padding: 1rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333; /* Dark text */
+    border: 2px solid #eaeaea; /* Light border */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .about-values-list li:hover {
+    transform: translateY(-5px); /* Lift effect */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+    border-color: #c09465; /* Accent color on hover */
+    background: #fff; /* Bright white background on hover */
+  }
+  
+  .about-values-list li::before {
+    content: "✔"; /* Add a checkmark icon before each item */
+    display: block;
+    font-size: 1.5rem;
+    color: #c09465; /* Accent color for the icon */
+    margin-bottom: 0.5rem;
+  }
+  
+  .about-footer {
+    font-size: 1rem;
+    margin-top: 2rem;
+    color: #8E8E8E;
+  }
+  
+  .about-link {
+    color: #2C2C2C;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+  }
+  
+  .about-link:hover {
+    color: #8E8E8E; /* Light Gray */
+    text-decoration: none;
+  }
