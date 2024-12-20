@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
+frontend/package-lock.json
 
 # testing
 /coverage
@@ -21,6 +23,4 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-#database
-/databases
+node_modules
