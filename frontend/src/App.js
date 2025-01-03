@@ -11,6 +11,7 @@ import Tools from "./components/Tools";
 import Forum from "./components/Forum";
 import StudentView from "./components/StudentView";
 import EditProfile from "./components/EditProfile";
+import BrowseCatalog from "./components/BrowseCatalog";
 
 function App() {
   const contactFormRef = useRef(null);
@@ -48,6 +49,7 @@ function App() {
         <Route path="/register" element={<AuthForm />} />
         <Route path="/connect" element={<Forum />} />
         <Route path="studentview" element={<StudentView />} />
+        <Route path="browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
       </Routes>
     </Router>

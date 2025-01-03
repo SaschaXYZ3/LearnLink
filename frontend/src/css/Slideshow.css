@@ -1,92 +1,64 @@
-.slideshow {
-    position: relative;
-    width: 70%;
-    height: 50rem;
-    margin: 0 auto;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    background: #f8f8f8; /* Light background */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .card {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    width: 100%;
-  }
-  
-  .slide {
-    min-width: 100%; /* Full width for each slide */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 1rem;
-  }
-  
-  .card-img-top {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-  }
-  
-  .card-body {
-    margin-top: 1rem;
-  }
-  
-  .card-title {
-    font-size: 1.5rem;
-    color: #333;
-  }
-  
-  .card-text {
-    color: #555;
-  }
-  
-  .btn {
-    background-color: #007bff;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Navigation Buttons */
-  .prev-btn,
-  .next-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-  }
-  
-  .prev-btn {
-    left: 10px;
-  }
-  
-  .next-btn {
-    right: 10px;
-  }
-  
-  .prev-btn:hover,
-  .next-btn:hover {
-    background: rgba(0, 0, 0, 0.7);
-  }
+/* General Page Styling */
+.student-view-page {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* Carousel Styling */
+.carousel img {
+  border-radius: 10px;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.carousel-caption h3 {
+  font-size: 2rem;
+  color: #fff;
+}
+
+.carousel-caption p {
+  font-size: 1rem;
+  color: #ddd;
+}
+
+/* Browse Catalogue Styling */
+.browse-catalogue h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.category-card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.category-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.category-card .btn {
+  background-color: #1B5948;
+  border: none;
+}
+
+.category-card .btn:hover {
+  background-color: #0F3D2E;
+}
