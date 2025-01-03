@@ -9,6 +9,8 @@ import Testimonials from "./components/testimonials";
 import ContactForm from "./components/ContactForm";
 import Tools from "./components/Tools"; 
 import Forum from "./components/Forum";
+import StudentView from "./components/StudentView";
+import EditProfile from "./components/EditProfile";
 
 function App() {
   const contactFormRef = useRef(null);
@@ -45,6 +47,8 @@ function App() {
         <Route path="/login" element={<AuthForm />} />
         <Route path="/register" element={<AuthForm />} />
         <Route path="/connect" element={<Forum />} />
+        <Route path="studentview" element={<StudentView />} />
+        <Route path="/editprofile" element={<EditProfile />} />
       </Routes>
     </Router>
   );
