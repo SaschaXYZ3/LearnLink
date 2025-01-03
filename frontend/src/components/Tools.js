@@ -1,5 +1,5 @@
 import React from "react";
-import "../Tools.css";
+import "../css/Tools.css";
 import DiscordLogo from "../images/discord.png";
 import MiroLogo from "../images/miro.png";
 import TrelloLogo from "../images/trello.png";

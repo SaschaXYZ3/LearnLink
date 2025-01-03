@@ -1,5 +1,5 @@
 import React from "react";
-import "../testimonials.css" // Optional: eigenes CSS für Testimonials
+import "../css/testimonials.css" // Optional: eigenes CSS für Testimonials
 import ViktImage from "../images/ViktoriaLernreich.png"; // Importiere das Bild
 import CamillaImage from "../images/CamillaStudiosa.png"; // Importiere das Bild
 import ChristianImage from "../images/ChristianKlug.png"; // Importiere das Bild

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../Slideshow.css"; // Add custom styles for the slideshow
+import "../css/Slideshow.css"; // Add custom styles for the slideshow
 
 const Slideshow = ({ courses }) => {
   const [currentIndex, setCurrentIndex] = useState(0);

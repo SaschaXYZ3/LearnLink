@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "../About.css";
+import "../css/About.css";
 import AboutImage from "../images/fhcampus.png";
 
 function About({ scrollToContact }) {
