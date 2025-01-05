@@ -56,8 +56,14 @@ const AuthForm = () => {
       }
 
       const data = await response.json();
-       // Speichern des Usernames im localStorage
+       // Speichern des JWT-Tokens im localStorage
+      if (isLogin) {
+      localStorage.setItem("token", data.token); // Speichern des Tokens
+      }
+
+      // Speichern des Usernames im localStorage
       localStorage.setItem("username", data.username);
+      localStorage.setItem("role", data.role);
 
       alert(
         isLogin 
