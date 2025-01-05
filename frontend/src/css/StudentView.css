@@ -1,42 +1,254 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background: #F1F0E8;
-    color: #333;
+/* General Reset - Setzt Standardwerte zurück */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.studentview-page {
-    padding: 50px;
+body {
+    font-family: "Arial", sans-serif;
+    color: #2C2C2C;
+    background-color: #FDFDFD;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Navbar Styling */
 .navbar-custom {
-    background: #EEE0C9;
-    border-bottom: 1px solid #DDD;
+    background: #FFFCF9; /* Cremeweiß */
+    border-bottom: 1px solid #EFEFEF;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2C2C2C;
+}
+
+/* Button Styling - Einheitlich für alle Browser */
+.btn-primary {
+    background: #8A9A9D; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    color: #2C2C2C;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    appearance: none; /* Safari Fix */
+    -webkit-appearance: none;
+}
+
+.btn-primary:hover {
+    background: #B6BBC4;
+    color: #2C2C2C;
+}
+
+.btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(138, 154, 157, 0.5);
+}
+
+/* Hero Section Styling */
 .catalog-hero {
     text-align: center;
-    padding: 50px;
-    background: #FDFDFD;
-    border-bottom: 1px solid #DDD;
+    padding: 80px 20px;
+    background: #EEE0C9;
+    border-radius: 0;
 }
 
+.catalog-hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2C2C2C;
+}
+
+.catalog-hero p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* Hero Button Styling */
 .hero-btn {
-    background: #96B6C5;
+    background: #8A9A9D;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 24px;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #2C2C2C;
+    cursor: pointer;
+    width: auto;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.hero-btn:hover {
+    background: #B6BBC4;
+    color: #2C2C2C;
+}
+
+/* Progress Section */
+.progress-section {
+    text-align: center;
+    padding: 40px;
+}
+
+.progress-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Calendar Section - React Calendar Styling angepasst */
+.calendar-section {
+    text-align: center;
+    padding: 40px;
+}
+
+/* Navigationstasten Styling */
+.react-calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #FFFCF9;
+    border-radius: 10px;
+}
+
+/* Monats- und Jahresanzeige */
+.react-calendar__navigation__label {
+    color: #2C2C2C;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Vorwärts- und Rückwärtspfeile */
+.react-calendar__navigation__arrow {
+    color: #2C2C2C;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.react-calendar__navigation__arrow:hover {
+    color: #8A9A9D; /* Hellgrau beim Hover */
+}
+.react-calendar {
+    border: 1px solid #DDD;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #FFFCF9;
+}
+
+.react-calendar__tile {
+    border-radius: 25px; /* animationseffekt beim hovern über die Kalendertage */
+    text-align: center;
+    color: #2C2C2C;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.react-calendar__tile--active {
+    background: #8A9A9D;
+    color: white;
+}
+
+.react-calendar__tile--now {
+    background: #B6BBC4;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.react-calendar__tile:hover {
+    background: #B6BBC4;
+    color: #2C2C2C;
     border-radius: 5px;
 }
 
+/* Bookings Section Styling */
+.bookings-section {
+    text-align: center;
+    padding: 40px;
+}
+
+.bookings-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Course Card Styling */
 .course-card {
-    background: #FFF;
-    border: 1px solid #DDD;
-    padding: 20px;
+    border: 1px solid #EEE;
     border-radius: 10px;
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    transition: transform 0.2s ease-in-out;
 }
 
 .course-card:hover {
-    transform: scale(1.02);
+    transform: translateY(-5px);
+}
+
+.course-card .card-body {
+    padding: 20px;
+    text-align: left;
+}
+
+.course-card h3 {
+    font-size: 1.5rem;
+    color: #2C2C2C;
+}
+
+.course-card p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Badge Styling */
+.badge-primary {
+    background: #8A9A9D;
+    color: #2C2C2C;
+}
+
+.badge-success {
+    background: #28a745;
+    color: white;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .navbar-custom {
+        flex-direction: column;
+    }
+
+    .catalog-hero {
+        padding: 60px 20px;
+    }
+
+    .calendar-section,
+    .progress-section,
+    .bookings-section {
+        padding: 20px;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .react-calendar {
+        max-width: 100%;
+    }
 }
