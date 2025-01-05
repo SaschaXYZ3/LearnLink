@@ -1,0 +1,42 @@
+/* General Styling */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F1F0E8;
+    color: #333;
+}
+
+.tutor-page {
+    padding: 20px;
+}
+
+.navbar-custom {
+    background: #EEE0C9;
+    border-bottom: 1px solid #EAEAEA;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.tutor-header {
+    text-align: center;
+    padding: 30px;
+    background: #EEE0C9;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.course-card {
+    border: 1px solid #DDD;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+}
+
+.list-group-item {
+    background: #fdfdfd;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

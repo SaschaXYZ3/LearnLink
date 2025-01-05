@@ -13,6 +13,7 @@ import StudentView from "./components/StudentView";
 import EditProfile from "./components/EditProfile";
 import BrowseCatalog from "./components/BrowseCatalog";
 import AdminPanel from "./components/AdminPanel";
+import TutorView from "./components/TutorView";
 
 function App() {
   const contactFormRef = useRef(null);
@@ -52,6 +53,7 @@ function App() {
         <Route path="/studentview" element={<StudentView />} />
         <Route path="/browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
+        <Route path="/tutorview" element={<TutorView />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </Router>
