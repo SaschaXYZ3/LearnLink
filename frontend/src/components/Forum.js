@@ -7,7 +7,7 @@ function Forum() {
 
   // Fetch all posts
   useEffect(() => {
-    fetch("http://localhost:5000/forum")
+    fetch("http://localhost:5001/forum")
       .then((response) => response.json())
       .then((data) => setPosts(data))
       .catch((err) => console.error("Error fetching posts:", err));
@@ -19,7 +19,7 @@ function Forum() {
     if (!newPost.trim()) return;
 
     try {
-      const response = await fetch("http://localhost:5000/forum", {
+      const response = await fetch("http://localhost:5001/forum", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newPost }),

@@ -39,8 +39,8 @@ const AuthForm = () => {
       return; // prevent the form from being sent
     }
     const url = isLogin
-      ? "http://localhost:5000/login"
-      : "http://localhost:5000/register";
+      ? "http://localhost:5001/login"
+      : "http://localhost:5001/register";
 
     try {
       const response = await fetch(url, {
