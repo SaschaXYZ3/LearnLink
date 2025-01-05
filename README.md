@@ -63,6 +63,12 @@ npm install react-router-dom
 ```
 npm install @fortawesome/fontawesome-free
 ```
+
+## dependencies
+npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+npm install react-icons bootstrap
+npm install react-bootstrap bootstrap
+
 ---------
 
 
