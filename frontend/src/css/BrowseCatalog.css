@@ -1,0 +1,137 @@
+/* General Styling */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    background-color: #FDFDFD;
+    color: #333;
+    line-height: 1.6;
+}
+
+.catalog-page {
+    padding-bottom: 50px;
+}
+
+/* Navbar Styling */
+.navbar-custom {
+    background: #FDFDFD;
+    border-bottom: 1px solid #EAEAEA;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Hero Section */
+.catalog-hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #EEE0C9, #F1F0E8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.catalog-hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.catalog-hero p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* Category Cards Section */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    padding: 50px;
+}
+
+/* Category Card Styling */
+.category-card {
+    background: #f1f0e8;
+    border: 1px solid #EAEAEA;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Category Header Styling */
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.category-icon {
+    font-size: 2rem;
+    color: #8A9A9D;
+}
+
+.expand-icon {
+    font-size: 1.5rem;
+    color: #8A9A9D;
+}
+
+/* Subcategory Section Styling */
+.subcategory-list {
+    margin-top: 20px;
+    padding: 10px 0;
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.subcategory-list.show {
+    display: flex;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.subcategory-badge {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 20px;
+    background: #96b6c5;
+    color: white;
+    transition: background 0.3s ease, transform 0.2s ease;
+    border: none;
+}
+
+.subcategory-badge:hover {
+    background: #8A9A9D;
+    transform: scale(1.1);
+}
+
+/* Footer Section */
+.catalog-footer {
+    padding: 20px;
+    font-size: 1rem;
+    background: #EAEAEA;
+    border-top: 1px solid #D6D6D6;
+    text-align: center;
+}
+
+/* Animation for the expanding effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

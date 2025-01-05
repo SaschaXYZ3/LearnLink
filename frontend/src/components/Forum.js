@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../Forum.css"; // Add custom styles for the forum
+import "../css/Forum.css"; // Add custom styles for the forum
 
 function Forum() {
   const [posts, setPosts] = useState([]);

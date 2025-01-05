@@ -1,0 +1,92 @@
+/* General Section Styling */
+.profile-section {
+    background-color: #f4f5f7;
+}
+
+.profile-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    max-width: 600px;
+    display: flex;
+}
+
+/* Left Section Styling */
+.profile-side-section {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    flex: 1;
+}
+
+.profile-side-section img {
+    border: 3px solid white;
+}
+
+.profile-side-section button {
+    background: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.profile-side-section button:hover {
+    background: #d9d9d9;
+}
+
+/* Right Section Styling */
+.profile-card .p-4 {
+    flex: 2;
+    background: white;
+}
+
+h6 {
+    font-weight: bold;
+}
+
+hr {
+    border-top: 2px solid #ddd;
+}
+
+p {
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+/* Input Styling */
+input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Buttons */
+.edit-btn {
+    background: #ffcc00;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.save-btn {
+    background: #28a745;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.save-btn:hover {
+    background: #218838;
+}

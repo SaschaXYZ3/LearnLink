@@ -1,0 +1,64 @@
+/* General Page Styling */
+.student-view-page {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* Carousel Styling */
+.carousel img {
+  border-radius: 10px;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.carousel-caption h3 {
+  font-size: 2rem;
+  color: #fff;
+}
+
+.carousel-caption p {
+  font-size: 1rem;
+  color: #ddd;
+}
+
+/* Browse Catalogue Styling */
+.browse-catalogue h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.category-card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.category-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.category-card .btn {
+  background-color: #1B5948;
+  border: none;
+}
+
+.category-card .btn:hover {
+  background-color: #0F3D2E;
+}

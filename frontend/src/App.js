@@ -9,6 +9,9 @@ import Testimonials from "./components/testimonials";
 import ContactForm from "./components/ContactForm";
 import Tools from "./components/Tools"; 
 import Forum from "./components/Forum";
+import StudentView from "./components/StudentView";
+import EditProfile from "./components/EditProfile";
+import BrowseCatalog from "./components/BrowseCatalog";
 import AdminPanel from "./components/AdminPanel";
 
 function App() {
@@ -46,6 +49,9 @@ function App() {
         <Route path="/login" element={<AuthForm />} />
         <Route path="/register" element={<AuthForm />} />
         <Route path="/connect" element={<Forum />} />
+        <Route path="studentview" element={<StudentView />} />
+        <Route path="browsecatalog" element={<BrowseCatalog />} />
+        <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </Router>
