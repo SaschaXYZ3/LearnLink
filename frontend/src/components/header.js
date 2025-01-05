@@ -45,6 +45,7 @@ function Header() {
         <Link to="/about">ABOUT</Link>
         <Link to="/tools">TOOLS</Link>
         <Link to="/connect">CONNECT</Link>
+        <Link to="/browsecatalog">CATALOG</Link>
         {isLoggedIn && role?.trim().toLowerCase() === "admin" && <Link to="/admin">ADMIN DASHBOARD</Link>}
       </nav>
 
@@ -62,7 +63,8 @@ function Header() {
               <span className="ms-2">{username}</span>
             </button>
             <div className="dropdown-menu">
-              <Link className="dropdown-item" to="#">My Profile</Link>
+              <Link className="dropdown-item" to="/editprofile">My Profile</Link>
+              <Link className="dropdown-item" to="/studentview">StudentView</Link>
               <Link className="dropdown-item" to="#">Settings</Link>
               <button className="dropdown-item" onClick={handleLogout}>
                 Logout

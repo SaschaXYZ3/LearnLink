@@ -49,8 +49,8 @@ function App() {
         <Route path="/login" element={<AuthForm />} />
         <Route path="/register" element={<AuthForm />} />
         <Route path="/connect" element={<Forum />} />
-        <Route path="studentview" element={<StudentView />} />
-        <Route path="browsecatalog" element={<BrowseCatalog />} />
+        <Route path="/studentview" element={<StudentView />} />
+        <Route path="/browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
