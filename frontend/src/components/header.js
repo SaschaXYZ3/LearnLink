@@ -11,7 +11,6 @@ function Header() {
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     const storedRole = localStorage.getItem("role");
-    setRole(storedRole);
 
     if (storedUsername) {
       setIsLoggedIn(true);
@@ -29,6 +28,7 @@ function Header() {
     localStorage.removeItem("role");  //entefernen der Rolle
     setIsLoggedIn(false); // Setzt den Status zurück
     setUsername(""); // Löscht den Usernamen
+    setRole(null);
     window.location.href = "/"; 
   };
 
@@ -45,7 +45,7 @@ function Header() {
         <Link to="/about">ABOUT</Link>
         <Link to="/tools">TOOLS</Link>
         <Link to="/connect">CONNECT</Link>
-        {role?.trim().toLowerCase() === "admin" && <Link to="/admin">ADMIN DASHBOARD</Link>}
+        {isLoggedIn && role?.trim().toLowerCase() === "admin" && <Link to="/admin">ADMIN DASHBOARD</Link>}
       </nav>
 
       {/* User Dropdown or Auth Links */}
