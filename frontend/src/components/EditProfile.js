@@ -1,126 +1,86 @@
 import React, { useState } from "react";
-import "../css/EditProfile.css"; // Make sure this CSS file exists
+import "../css/EditProfile.css";
 
 function EditProfile() {
-  // State to store user data
+  // State für Benutzerdaten
   const [userData, setUserData] = useState({
     name: "Marie Horwitz",
     role: "Web Designer",
     email: "info@example.com",
     phone: "123 456 789",
-    recentProject: "Lorem ipsum",
-    mostViewedProject: "Dolor sit amet",
+    address: "123 Example Street, Vienna",
+    birthdate: "1990-01-01",
+    recentProject: "Lorem Ipsum",
+    mostViewedProject: "Dolor Sit Amet"
   });
+  
+  const [isEditing, setIsEditing] = useState(false); // Edit-Modus
 
-  const [isEditing, setIsEditing] = useState(false); // Edit mode toggle
-
-  // Handle changes to the form fields
+  // Änderung der Formulareingaben verarbeiten
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
 
-  // Toggle between view and edit mode
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
-  };
-
-  // Simulate saving data (could be connected to a backend)
+  // Änderungen speichern
   const handleSave = () => {
     alert("Profile updated successfully!");
-    setIsEditing(false); // Exit edit mode after saving
+    setIsEditing(false); // Bearbeitungsmodus beenden
   };
 
   return (
-    <section className="profile-section vh-100">
-      <div className="container py-5 h-100 d-flex justify-content-center align-items-center">
-        <div className="card profile-card d-flex flex-row">
-          
-          {/* Left Section */}
-          <div className="profile-side-section text-center text-white gradient-custom p-4">
-            <img
-              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-              alt="Avatar"
-              className="rounded-circle mb-3"
-              style={{ width: "80px" }}
+    <section className="profile-section">
+      <div className="profile-container">
+        
+        {/* Profilbild und Avatar */}
+        <div className="profile-header">
+          <img
+            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+            alt="User Avatar"
+            className="profile-avatar"
+          />
+          <h2>{userData.name}</h2>
+          {/* Rolle bearbeitbar */}
+          {isEditing ? (
+            <input
+              type="text"
+              name="role"
+              value={userData.role}
+              onChange={handleInputChange}
+              className="form-control mb-2"
             />
-            <h5>{userData.name}</h5>
+          ) : (
             <p>{userData.role}</p>
-            <button className="edit-btn" onClick={toggleEdit}>
-              {isEditing ? "Cancel" : "Edit Profile"}
-            </button>
-          </div>
+          )}
 
-          {/* Right Section - Editable Info */}
-          <div className="p-4 flex-fill">
-            <h6>Information</h6>
-            <hr />
-            <form>
-              <p><strong>Email:</strong></p>
-              {isEditing ? (
-                <input
-                  type="email"
-                  name="email"
-                  value={userData.email}
-                  onChange={handleInputChange}
-                  className="form-control mb-2"
-                />
-              ) : (
-                <p>{userData.email}</p>
-              )}
+          <button onClick={() => setIsEditing(!isEditing)}>
+            {isEditing ? "Cancel" : "Edit Profile"}
+          </button>
+        </div>
 
-              <p><strong>Phone:</strong></p>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="phone"
-                  value={userData.phone}
-                  onChange={handleInputChange}
-                  className="form-control mb-2"
-                />
-              ) : (
-                <p>{userData.phone}</p>
-              )}
+        {/* Profilinformationen */}
+        <div className="profile-details">
+          <h3>Personal Information</h3>
+          <p><strong>Email:</strong> {userData.email}</p>
+          <p><strong>Phone:</strong> {userData.phone}</p>
+          <p><strong>Address:</strong> {userData.address}</p>
+          <p><strong>Birthdate:</strong> {userData.birthdate}</p>
 
-              <h6 className="mt-4">Projects</h6>
-              <hr />
-              <p><strong>Recent:</strong></p>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="recentProject"
-                  value={userData.recentProject}
-                  onChange={handleInputChange}
-                  className="form-control mb-2"
-                />
-              ) : (
-                <p>{userData.recentProject}</p>
-              )}
+          {/* Eingabefelder im Bearbeitungsmodus */}
+          {isEditing && (
+            <>
+              <input type="text" name="email" value={userData.email} onChange={handleInputChange} />
+              <input type="text" name="phone" value={userData.phone} onChange={handleInputChange} />
+              <input type="text" name="address" value={userData.address} onChange={handleInputChange} />
+              <input type="date" name="birthdate" value={userData.birthdate} onChange={handleInputChange} />
+              <button onClick={handleSave}>Save Changes</button>
+            </>
+          )}
 
-              <p><strong>Most Viewed:</strong></p>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="mostViewedProject"
-                  value={userData.mostViewedProject}
-                  onChange={handleInputChange}
-                  className="form-control mb-2"
-                />
-              ) : (
-                <p>{userData.mostViewedProject}</p>
-              )}
-
-              {isEditing && (
-                <button
-                  type="button"
-                  className="save-btn mt-3"
-                  onClick={handleSave}
-                >
-                  Save Changes
-                </button>
-              )}
-            </form>
-          </div>
+          {/* Projektinformationen */}
+          <h3 className="mt-4">Projects</h3>
+          <p><strong>Recent Project:</strong> {userData.recentProject}</p>
+          <p><strong>Most Viewed Project:</strong> {userData.mostViewedProject}</p>
         </div>
       </div>
     </section>

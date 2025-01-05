@@ -7,31 +7,33 @@
 
 body {
   font-family: "Arial", sans-serif;
-  color: #2C2C2C;
 }
 
 /* Header Styling */
 .header {
   display: flex;
-  justify-content: space-between; /* Logo, Nav, Searchbar, Profilbild */
+  justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #FFFCF9; /* Cremeweiß */
-  border-bottom: 1px solid #EFEFEF;
+  background-color: #FFFCF9;
+  /* Cremeweiß */
+  color: #2C2C2C;
+  /* Dunkelgrau */
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-bottom: 1px solid #EFEFEF;
+  /* Dezente Trennlinie */
 }
 
-/* Logo Styling */
 .logo a {
   font-size: 1.8rem;
   color: #2C2C2C;
+  /* Dunkelgrau */
   text-decoration: none;
   font-weight: bold;
 }
 
-/* Navigation Styling */
 .nav {
   display: flex;
   gap: 1.5rem;
@@ -39,6 +41,7 @@ body {
 
 .nav a {
   color: #8E8E8E;
+  /* Hellgrau */
   text-decoration: none;
   transition: color 0.3s ease;
   font-weight: 500;
@@ -46,42 +49,10 @@ body {
 
 .nav a:hover {
   color: #2C2C2C;
+  /* Dunkelgrau */
 }
 
-/* Suchleiste Styling */
-.search-form {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-right: 1rem;
-}
-
-.search-input {
-  padding: 10px 40px 10px 15px; /* Platz für die Lupe auf der rechten Seite */
-  border: 1px solid #8E8E8E;
-  border-radius: 20px;
-  outline: none;
-  width: 220px;
-  transition: border-color 0.3s ease;
-}
-
-.search-input:focus {
-  border-color: #2C2C2C;
-}
-
-/* Lupe im Suchfeld positionieren */
-.search-btn {
-  position: absolute;
-  right: 10px; /* Lupe rechts innerhalb des Feldes */
-  padding-top: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #2C2C2C;
-}
-
-/* Profilbereich Styling */
+/* Auth Section */
 .auth-section {
   display: flex;
   align-items: center;
@@ -90,18 +61,23 @@ body {
 
 .subscribe-btn {
   color: #2C2C2C;
+  /* Dunkelgrau */
   text-decoration: none;
   border: 1px solid #8E8E8E;
+  /* Dezenter Rand */
   padding: 0.5rem 1rem;
   border-radius: 5px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .subscribe-btn:hover {
   background-color: #EFEFEF;
+  /* Hellgrau */
+  color: #2C2C2C;
+  /* Dunkelgrau */
 }
 
-/* Dropdown Menü */
+/* Dropdown Styling */
 .dropdown {
   position: relative;
 }
@@ -109,9 +85,11 @@ body {
 .dropdown-toggle {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  border: none;
   background: none;
+  border: none;
+  color: #2C2C2C;
+  /* Dunkelgrau */
+  cursor: pointer;
 }
 
 .dropdown-menu {
@@ -119,27 +97,94 @@ body {
   top: 100%;
   right: 0;
   background-color: #FFFCF9;
+  /* Cremeweiß */
   border: 1px solid #EFEFEF;
+  /* Hellgrauer Rand */
   padding: 0.5rem 0;
   display: none;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown:hover .dropdown-menu {
   display: block;
 }
 
-/* Mobile Ansicht */
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  color: #2C2C2C;
+  /* Dunkelgrau */
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #b6b1b1;
+  /* Hellgrau */
+  color: #2C2C2C;
+}
+
+/* Hamburger Menu */
 .navbar-toggler {
   display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar-toggler-icon {
+  width: 25px;
+  height: 3px;
+  background-color: #2C2C2C;
+  /* Dunkelgrau */
+  display: block;
+  margin: 5px 0;
+  border-radius: 2px;
+}
+
+/* Suchleiste Styling */
+.search-form {
+  position: relative;
+  /* Wichtig für die Positionierung der Lupe */
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+  width: 100%;
+  /* Volle Breite für flexible Integration */
+  max-width: 400px;
+  /* Begrenzung der maximalen Breite */
+}
+
+/* Lupe Styling */
+.search-btn {
+  position: absolute;
+  right: 10px;
+  /* Position der Lupe im Suchfeld */
+  top: 50%;
+  transform: translateY(-40%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #2C2C2C; /* Dunkelgrau passend zum Design */
+  outline: none;
+  width: 10%;
+  box-shadow: none;
+}
+
+/* Lupe Hover Effekt aber vom ICON! */
+.search-btn:hover {
+  color: #8E8E8E;
+  /* Dezenter Hover-Effekt */
 }
 
 @media (max-width: 768px) {
   .nav {
-      display: none;
+    display: none;
+    /* Hide nav on small screens */
   }
 
   .navbar-toggler {
-      display: block;
+    display: block;
   }
 }

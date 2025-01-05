@@ -1,92 +1,111 @@
-/* General Section Styling */
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background: #F1F0E8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Profile Section Styling */
 .profile-section {
-    background-color: #f4f5f7;
-}
-
-.profile-card {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    overflow: hidden;
-    max-width: 600px;
     display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 50px;
+    background: #EEE0C9;
 }
 
-/* Left Section Styling */
-.profile-side-section {
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    color: white;
+/* Profile Container Styling */
+.profile-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    flex: 1;
-}
-
-.profile-side-section img {
-    border: 3px solid white;
-}
-
-.profile-side-section button {
-    background: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.profile-side-section button:hover {
-    background: #d9d9d9;
-}
-
-/* Right Section Styling */
-.profile-card .p-4 {
-    flex: 2;
-    background: white;
-}
-
-h6 {
-    font-weight: bold;
-}
-
-hr {
-    border-top: 2px solid #ddd;
-}
-
-p {
-    margin-bottom: 0.5rem;
-    color: #555;
-}
-
-/* Input Styling */
-input {
+    max-width: 600px;
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #DDD;
+    overflow: hidden;
 }
 
-/* Buttons */
-.edit-btn {
-    background: #ffcc00;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.save-btn {
-    background: #28a745;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+/* Profile Header */
+.profile-header {
+    background: #96B6C5;
     color: white;
-    cursor: pointer;
-    font-weight: bold;
+    text-align: center;
+    padding: 30px;
+    border-bottom: 1px solid #DDD;
 }
 
-.save-btn:hover {
-    background: #218838;
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid white;
+    object-fit: cover;
+}
+
+/* Profile Details Styling */
+.profile-details {
+    padding: 30px;
+}
+
+.profile-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.profile-details p {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Eingabefelder */
+input[type="text"],
+input[type="date"],
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #96B6C5;
+    outline: none;
+}
+
+/* Button Styling */
+button {
+    cursor: pointer;
+    background: #96B6C5;
+    border: none;
+    color: white;
+    font-weight: bold;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #5F7A8A;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px;
+    }
+
+    .profile-header {
+        padding: 20px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+    }
 }
