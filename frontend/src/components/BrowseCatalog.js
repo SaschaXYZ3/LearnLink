@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Container, Button, Card, Badge, Form, ProgressBar, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faStar, faFilter, faSort, faList, faThLarge } from "@fortawesome/free-solid-svg-icons";
-import "../css/BrowseCatalog.css"; // Aktualisierte CSS-Datei für konsistente Stile
+import "../css/BrowseCatalog.css";
 
 function BrowseCatalog() {
-    // Dummy-Kurse mit erweiterten Daten aus dem Bereich Computer Science
     const initialCourses = [
         { title: "Python Basics", category: "Coding", instructor: "John Doe", rating: 4.5, reviews: 120, capacity: 20, enrolled: 15, completed: 10, favorited: false },
         { title: "Network Security", category: "IT Security", instructor: "Jane Smith", rating: 5, reviews: 80, capacity: 15, enrolled: 15, completed: 15, favorited: false },
@@ -19,20 +18,19 @@ function BrowseCatalog() {
         { title: "SQL and Databases", category: "Computer Science", instructor: "Donald Chamberlin", rating: 4.6, reviews: 120, capacity: 20, enrolled: 19, completed: 15, favorited: false }
     ];
 
-    // State für Kursdaten, Suche, Ansicht, Filter und Sortierung
     const [courses, setCourses] = useState(initialCourses);
     const [searchTerm, setSearchTerm] = useState("");
     const [viewType, setViewType] = useState("grid");
     const [filterCategory, setFilterCategory] = useState("");
     const [sortOption, setSortOption] = useState("");
 
-    // Filterfunktion basierend auf Suchbegriff und Kategorie
+    const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
+
     const filteredCourses = courses.filter(course =>
         course.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (filterCategory ? course.category === filterCategory : true)
     );
 
-    // Sortierfunktion basierend auf Benutzeroption
     const sortedCourses = [...filteredCourses].sort((a, b) => {
         if (sortOption === "rating") {
             return b.rating - a.rating;
@@ -42,17 +40,28 @@ function BrowseCatalog() {
         return 0;
     });
 
-    // Favoritenfunktion korrekt angepasst, damit sie auf die sortierten Daten angewendet wird
     const toggleFavorite = (courseTitle) => {
+        if (!isLoggedIn) {
+            alert("Please log in to add courses to your favorites!");
+            return;
+        }
+
         const updatedCourses = courses.map((course) =>
             course.title === courseTitle ? { ...course, favorited: !course.favorited } : course
         );
         setCourses(updatedCourses);
     };
 
+    const handleBooking = () => {
+        if (!isLoggedIn) {
+            alert("Please log in to book a course!");
+            return;
+        }
+        alert("Course booked successfully!"); // Platzhalteraktion
+    };
+
     return (
         <Container className="browse-catalog-page mt-5">
-            {/* Suchleiste, Filter und Sortierung */}
             <Form className="d-flex justify-content-between align-items-center mb-4">
                 <Form.Control
                     type="text"
@@ -78,7 +87,6 @@ function BrowseCatalog() {
                 </Form.Select>
             </Form>
 
-            {/* Kurskarten Sektion */}
             <div className={viewType === "grid" ? "d-flex flex-wrap gap-4 justify-content-center" : ""}>
                 {sortedCourses.map((course, index) => (
                     <Card key={index} style={{ width: "20rem" }} className="course-card">
@@ -89,16 +97,12 @@ function BrowseCatalog() {
                                 <strong>Dozent:</strong> {course.instructor} <br />
                                 <strong>Bewertung:</strong> {course.rating} <FontAwesomeIcon icon={faStar} style={{ color: "#FFD700" }} /> ({course.reviews} Bewertungen)
                             </Card.Text>
-
-                            {/* Fortschrittsbalken  - je nachdem wieviele Leute in den Kurs passen entsteht hier ein Progress */}
                             <ProgressBar
                                 now={(course.completed / course.capacity) * 100}
                                 label={`${course.completed}/${course.capacity}`}
                                 variant={course.completed === course.capacity ? "success" : "info"}
                                 className="mb-3"
                             />
-
-                            {/* Favoriten- und Buchungsbutton */}
                             <div className="button-group">
                                 <OverlayTrigger placement="top" overlay={<Tooltip>Zu Favoriten hinzufügen</Tooltip>}>
                                     <Button
@@ -108,7 +112,9 @@ function BrowseCatalog() {
                                         <FontAwesomeIcon icon={faHeart} />
                                     </Button>
                                 </OverlayTrigger>
-                                <Button className="btn-primary">Jetzt buchen</Button>
+                                <Button className="btn-primary" onClick={handleBooking}>
+                                    Jetzt buchen
+                                </Button>
                             </div>
                         </Card.Body>
                     </Card>

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import "../css/Header.css";
 
 function Header() {
-    // State-Variablen für den Login-Status, den Benutzernamen, die Rolle und die Suchleiste
+    // State-Variablen für den Login-Status, den Benutzernamen und die Rolle
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
     const [role, setRole] = useState(null);
@@ -19,9 +17,7 @@ function Header() {
         if (storedUsername) {
             setIsLoggedIn(true);
             setUsername(storedUsername);
-            if (storedRole === "admin") {
-                setRole(storedRole); // Speichert die Rolle des Nutzers, wenn vorhanden
-            }
+            setRole(storedRole);
         }
     }, []);
 
@@ -29,6 +25,8 @@ function Header() {
     const handleLogout = () => {
         localStorage.removeItem("username");
         localStorage.removeItem("role");
+        localStorage.removeItem("token"); 
+        localStorage.removeItem("userId"); // Entfernen der Benutzer-ID
         setIsLoggedIn(false);
         setUsername("");
         setRole(null);
@@ -61,41 +59,35 @@ function Header() {
                 )}
             </nav>
 
-            {/* Suchleiste – Erscheint nur, wenn Benutzer eingeloggt ist */}
-            {isLoggedIn && (
-                <form onSubmit={handleSearch} className="search-form">
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search courses..."
-                        className="search-input"
-                    />
-                    <button type="submit" className="search-btn">
-                        <FontAwesomeIcon icon={faSearch} />
-                    </button>
-                </form>
-            )}
-
             {/* Authentifizierungsbereich: Zeigt entweder den Benutzernamen oder Login/Registrierung */}
             <div className="auth-section">
-                {username ? (
+                {isLoggedIn ? (
                     // Dropdown-Menü für eingeloggte Nutzer
                     <div className="dropdown">
                         <button className="dropdown-toggle">
-                            <img
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp"
-                                className="rounded-circle"
-                                height="55"
-                                alt="User Avatar"
-                            />
+                           {/* Zeigt das Profilbild und den Benutzernamen an */}
+                          <img 
+                              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                              alt="Profile" 
+                              style={{ width: "50px", height: "50px", borderRadius: "50%", marginRight: "10px" }} 
+                          />
+                            {/* Zeigt den Benutzernamen an */}
                             <span className="ms-2">{username}</span>
                         </button>
-                        <div className="dropdown-menu">
-                            <Link className="dropdown-item" to="/editprofile">My Profile</Link>
-                            <Link className="dropdown-item" to="/studentview">StudentView</Link>
-                            <Link className="dropdown-item" to="#">Settings</Link>
-                            <button className="dropdown-item" onClick={handleLogout}>Logout</button>
+                        <div className="dropdown-menu" 
+                            style={{ fontSize: "16px", color: "#000000", textDecoration: "none", textAlign: "center" }}>
+                            <Link className="dropdown-item" to="/editprofile" 
+                                style={{ fontSize: "16px", color: "#000000", textDecoration: "none" }}>My Profile</Link>
+                            {role === "student" && <Link to="/studentview" 
+                                style={{ fontSize: "16px", color: "#000000", textDecoration: "none" }}>Student Dashboard</Link>}
+                            {role === "tutor" && <Link to="/tutorview" 
+                                style={{ fontSize: "16px", color: "#000000", textDecoration: "none" }}>Tutor Dashboard</Link>}
+                            {role === "admin" && <Link to="/admin" 
+                                style={{ fontSize: "16px", color: "#000000", textDecoration: "none" }}>Admin Dashboard</Link>}
+                            <Link className="dropdown-item" to="#" 
+                                style={{ fontSize: "16px", color: "#000000", textDecoration: "none" }}>Settings</Link>
+                            <button className="dropdown-item" onClick={handleLogout} 
+                                style={{ fontSize: "16px", color: "#000000", textDecoration: "none" }}>Logout</button>
                         </div>
                     </div>
                 ) : (

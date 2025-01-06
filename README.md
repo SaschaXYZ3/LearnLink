@@ -69,6 +69,9 @@ npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons 
 npm install react-icons bootstrap
 npm install react-bootstrap bootstrap
 
+npm install react-calendar react-datepicker
+
+
 ---------
 
 

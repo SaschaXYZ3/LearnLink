@@ -14,6 +14,9 @@ import EditProfile from "./components/EditProfile";
 import BrowseCatalog from "./components/BrowseCatalog";
 import AdminPanel from "./components/AdminPanel";
 import TutorView from "./components/TutorView";
+import Unauthorized from "./components/Unauthorized";
+import PrivateRoute from "./components/PrivateRoute";
+
 
 function App() {
   const contactFormRef = useRef(null);
@@ -50,11 +53,36 @@ function App() {
         <Route path="/login" element={<AuthForm />} />
         <Route path="/register" element={<AuthForm />} />
         <Route path="/connect" element={<Forum />} />
-        <Route path="/studentview" element={<StudentView />} />
         <Route path="/browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
-        <Route path="/tutorview" element={<TutorView />} />
-        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
+        {/* Geschützte Routen */}
+        <Route
+          path="/studentview"
+          element={
+            <PrivateRoute role="student">
+              <StudentView />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tutorview"
+          element={
+            <PrivateRoute role="tutor">
+              <TutorView />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute role="admin">
+              <AdminPanel />
+            </PrivateRoute>
+          }
+        />
+
       </Routes>
     </Router>
   );

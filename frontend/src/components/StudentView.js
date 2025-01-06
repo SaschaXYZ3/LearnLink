@@ -29,7 +29,7 @@ function StudentView() {
     return (
         <div className="studentview-page">
 
-            {/* Navbar Section */}
+            {/* Navbar Section 
             <Navbar expand="lg" className="navbar-custom">
                 <Container>
                     <Navbar.Brand href="/">LearnLink - Student Dashboard</Navbar.Brand>
@@ -39,6 +39,7 @@ function StudentView() {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
+            */}
 
             {/* Hero Section */}
             <div className="catalog-hero">
