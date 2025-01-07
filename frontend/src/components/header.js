@@ -26,7 +26,6 @@ function Header() {
         localStorage.removeItem("username");
         localStorage.removeItem("role");
         localStorage.removeItem("token"); 
-        localStorage.removeItem("userId"); // Entfernen der Benutzer-ID
         setIsLoggedIn(false);
         setUsername("");
         setRole(null);

@@ -32,66 +32,66 @@ const AuthForm = () => {
   // Formular absenden
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    
-    // Überprüfen, ob die Passwörter übereinstimmen (nur bei Registrierung)
+    // check if the passwords are the same
     if (!isLogin && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
-      return; // Verhindern, dass das Formular gesendet wird
+      return; // prevent the form from being sent
     }
 
     const url = isLogin
       ? "http://localhost:5000/login"
       : "http://localhost:5000/register";
 
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error || response.statusText}`);
-        return;
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify({
+            ...formData
+          }),
+          headers: {
+            "Content-Type": "application/json", // Header für den Content-Type hinzugefügt
+          },
+        });
+    
+        if (!response.ok) {
+          // Fehlerbehandlung für nicht erfolgreiche Antwort
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || response.statusText}`);
+          return; // Verhindert die Weiterleitung bei einem Fehler
+        }
+    
+        // Wenn die Antwort erfolgreich war (response.ok === true)
+        const data = await response.json();
+        // Speichern des JWT-Tokens im localStorage
+    
+        localStorage.setItem("token", data.token); // Speichern des Tokens
+      
+    
+       // Speichern des Usernames und der Rolle im localStorage
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("role", data.role);
+     
+        alert(
+          isLogin
+            ? `Welcome back, ${data.username}!`
+            : `User ${data.username} registered successfully!`
+        );
+    
+        // Weiterleitung basierend auf der Rolle
+        if (data.role === "student") {
+          window.location.href = "/studentview";
+        } else if (data.role === "tutor") {
+          window.location.href = "/tutorview";
+        } else if (data.role === "admin") {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error("Error details:", error); // Detaillierte Fehlermeldung
+        alert("Error connecting to server.");
       }
-
-      const data = await response.json();
-
-      // Überprüfen, ob ein Token zurückgegeben wurde
-      if (isLogin && data.token) {
-        // Token im localStorage speichern
-        localStorage.setItem("token", data.token);
-      } else if (!isLogin && data.token) {
-        // Falls das Token auch bei der Registrierung zurückgegeben wird (falls gewünscht)
-        localStorage.setItem("token", data.token);
-      }
-
-      // Speichern des Usernames und der Rolle im localStorage
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("role", data.role);
-
-      alert(
-        isLogin
-          ? `Welcome back, ${data.username}!`
-          : `User ${data.username} registered successfully!`
-      );
-
-      // Weiterleitung basierend auf der Rolle
-      if (data.role === "student") {
-        window.location.href = "/studentview";
-      } else if (data.role === "tutor") {
-        window.location.href = "/tutorview";
-      } else if (data.role === "admin") {
-        window.location.href = "/admin";
-      } else {
-        window.location.href = "/";
-      }
-    } catch (error) {
-      console.error("Error details:", error); // Detaillierte Fehlermeldung
-      alert("Error connecting to server.");
-    }
-  };
+    };
 
   return (
     <div className="auth-container">
@@ -102,7 +102,7 @@ const AuthForm = () => {
             <div className="form-group mt-3">
               <label>Role:</label>
               <div className="d-flex justify-content-center mt-2">
-                <br></br>
+                <br />
                 <div className="form-check form-check-inline">
                   <input
                     className="form-check-input"

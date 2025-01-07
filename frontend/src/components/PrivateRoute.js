@@ -1,21 +1,18 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-const PrivateRoute = ({ children, role }) => {
-    const token = localStorage.getItem("token"); // Token prüfen
-    const storedRole = localStorage.getItem("role");
+const PrivateRoute = ({ role, children }) => {
+  const userRole = localStorage.getItem("role");
 
-    if (!token) {
-        // Wenn kein Token, Benutzer zur Login-Seite weiterleiten
-        return <Navigate to="/login" replace />;
-    }
+  // Überprüfen, ob der Benutzer eingeloggt ist und die richtige Rolle hat
+  if (!localStorage.getItem("token")) {
+    return <Navigate to="/login" />;
+  }
 
-    if (role && storedRole !== role) {
-        // Wenn Rolle nicht übereinstimmt, Zugriff verweigern
-        return <Navigate to="/unauthorized" replace />;
-    }
+  if (userRole !== role) {
+    return <Navigate to="/unauthorized" />;
+  }
 
-    return children; // Zugriff gewähren
+  return children ? children : <Outlet />;
 };
 
 export default PrivateRoute;
