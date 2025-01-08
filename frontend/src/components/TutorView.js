@@ -174,9 +174,35 @@ const TutorView = () => {
     setBookings(updatedBookings);
   };
 
-  const deleteCourse = (index) => {
-    const updatedCourses = courses.filter((_, i) => i !== index);
-    setCourses(updatedCourses);
+  const deleteCourse = async (courseId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/courses/${courseId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+        return;
+      }
+
+      // Update the state to remove the course from the UI
+      setCourses((prevCourses) =>
+        prevCourses.filter((course) => course.id !== courseId)
+      );
+
+      alert("Course deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete course:", error);
+      alert("Failed to delete the course. Please try again later.");
+    }
   };
 
   return (
@@ -212,7 +238,7 @@ const TutorView = () => {
                 <Button
                   variant="danger"
                   size="sm"
-                  onClick={() => deleteCourse(index)}
+                  onClick={() => deleteCourse(course.id)}
                 >
                   <FontAwesomeIcon icon={faTrash} /> Delete
                 </Button>
