@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Button,
@@ -21,6 +21,7 @@ import {
 import "../css/TutorView.css";
 
 const TutorView = () => {
+  //const { userId } = useContext(UserContext); // Access userId from context
   const [showAddModal, setShowAddModal] = useState(false);
   const [courses, setCourses] = useState([]);
   const [bookings, setBookings] = useState([
@@ -42,6 +43,30 @@ const TutorView = () => {
     time: new Date(),
     meetingLink: "",
   });
+
+  const [userId, setUserId] = useState(null); // Store user ID
+  //const [loading, setLoading] = useState(true); // Loading state for user data
+  const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/protected", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        setUserId(data.user.id); // Assuming the response contains the user ID
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
@@ -71,12 +96,18 @@ const TutorView = () => {
 
   const addCourse = async () => {
     try {
+      const courseData = {
+        ...newCourse,
+        userId, // Include the tutor's userId
+      };
+
       const response = await fetch("http://localhost:5000/api/courses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newCourse),
+        body: JSON.stringify(courseData),
       });
 
       if (!response.ok) {
