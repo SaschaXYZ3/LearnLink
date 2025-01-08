@@ -48,9 +48,9 @@ const TutorView = () => {
   //const [loading, setLoading] = useState(true); // Loading state for user data
   const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/protected", {
+        const response = await fetch("http://localhost:5000/api/courses/mine", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -58,15 +58,19 @@ const TutorView = () => {
           },
         });
 
+        if (!response.ok) {
+          throw new Error("Failed to fetch your courses");
+        }
+
         const data = await response.json();
-        setUserId(data.user.id); // Assuming the response contains the user ID
-      } catch (err) {
-        console.error(err);
+        setCourses(data); // Setzt die geladenen Kurse in den State
+      } catch (error) {
+        console.error("Error fetching your courses:", error);
       }
     };
 
-    fetchUser();
-  }, []);
+    fetchCourses();
+  }, [token]);
 
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
@@ -98,7 +102,7 @@ const TutorView = () => {
     try {
       const courseData = {
         ...newCourse,
-        userId, // Include the tutor's userId
+        userId, // Wird benötigt, um den Kurs dem Tutor zuzuordnen
       };
 
       const response = await fetch("http://localhost:5000/api/courses", {
@@ -117,7 +121,13 @@ const TutorView = () => {
       }
 
       const data = await response.json();
-      setCourses([...courses, { ...newCourse, id: data.courseId }]); // Include the new course with its ID
+
+      // Neu erstellten Kurs direkt dem State hinzufügen
+      setCourses((prevCourses) => [
+        ...prevCourses,
+        { ...newCourse, id: data.courseId },
+      ]);
+
       setShowAddModal(false);
       resetForm();
       alert("Course added successfully!");
