@@ -35,7 +35,7 @@ function BrowseCatalog() {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:5000/api/courses", {
+        const response = await axios.get("http://localhost:5001/api/courses", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

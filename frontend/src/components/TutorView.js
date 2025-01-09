@@ -50,7 +50,7 @@ const TutorView = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/courses/mine", {
+        const response = await fetch("http://localhost:5001/api/courses/mine", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const TutorView = () => {
         userId, // Wird benötigt, um den Kurs dem Tutor zuzuordnen
       };
 
-      const response = await fetch("http://localhost:5000/api/courses", {
+      const response = await fetch("http://localhost:5001/api/courses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -177,7 +177,7 @@ const TutorView = () => {
   const deleteCourse = async (courseId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/courses/${courseId}`,
+        `http://localhost:5001/api/courses/${courseId}`,
         {
           method: "DELETE",
           headers: {
