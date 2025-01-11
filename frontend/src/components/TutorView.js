@@ -19,6 +19,7 @@ import {
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/TutorView.css";
+import jwt_decode from "jwt-decode";
 
 const TutorView = () => {
   //const { userId } = useContext(UserContext); // Access userId from context
@@ -71,7 +72,6 @@ const TutorView = () => {
 
     fetchCourses();
   }, [token]);
-
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
@@ -104,7 +104,9 @@ const TutorView = () => {
         ...newCourse,
         userId, // Wird benötigt, um den Kurs dem Tutor zuzuordnen
       };
-
+      console.log("Userid:", userId);
+      console.log("USer-Token:", token);
+      //const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:5001/api/courses", {
         method: "POST",
         headers: {
@@ -116,11 +118,13 @@ const TutorView = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Backend Error:", errorData);
         alert(`Error: ${errorData.error}`);
         return;
       }
 
       const data = await response.json();
+      console.log("Course added successfully:", data);
 
       // Neu erstellten Kurs direkt dem State hinzufügen
       setCourses((prevCourses) => [
@@ -416,7 +420,7 @@ const TutorView = () => {
                 name="maxStudents"
                 min="1"
                 max="100"
-                value={newCourse.capacity}
+                value={newCourse.maxStudents}
                 onChange={handleInputChange}
                 required
               />

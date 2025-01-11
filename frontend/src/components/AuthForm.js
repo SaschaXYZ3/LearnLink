@@ -42,56 +42,55 @@ const AuthForm = () => {
       ? "http://localhost:5001/login"
       : "http://localhost:5001/register";
 
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          body: JSON.stringify({
-            ...formData
-          }),
-          headers: {
-            "Content-Type": "application/json", // Header für den Content-Type hinzugefügt
-          },
-        });
-    
-        if (!response.ok) {
-          // Fehlerbehandlung für nicht erfolgreiche Antwort
-          const errorData = await response.json();
-          alert(`Error: ${errorData.error || response.statusText}`);
-          return; // Verhindert die Weiterleitung bei einem Fehler
-        }
-    
-        // Wenn die Antwort erfolgreich war (response.ok === true)
-        const data = await response.json();
-        // Speichern des JWT-Tokens im localStorage
-    
-        localStorage.setItem("token", data.token); // Speichern des Tokens
-      
-    
-       // Speichern des Usernames und der Rolle im localStorage
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("role", data.role);
-     
-        alert(
-          isLogin
-            ? `Welcome back, ${data.username}!`
-            : `User ${data.username} registered successfully!`
-        );
-    
-        // Weiterleitung basierend auf der Rolle
-        if (data.role === "student") {
-          window.location.href = "/studentview";
-        } else if (data.role === "tutor") {
-          window.location.href = "/tutorview";
-        } else if (data.role === "admin") {
-          window.location.href = "/admin";
-        } else {
-          window.location.href = "/";
-        }
-      } catch (error) {
-        console.error("Error details:", error); // Detaillierte Fehlermeldung
-        alert("Error connecting to server.");
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          ...formData,
+        }),
+        headers: {
+          "Content-Type": "application/json", // Header für den Content-Type hinzugefügt
+        },
+      });
+
+      if (!response.ok) {
+        // Fehlerbehandlung für nicht erfolgreiche Antwort
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || response.statusText}`);
+        return; // Verhindert die Weiterleitung bei einem Fehler
       }
-    };
+
+      // Wenn die Antwort erfolgreich war (response.ok === true)
+      const data = await response.json();
+      // Speichern des JWT-Tokens im localStorage
+
+      localStorage.setItem("token", data.token); // Speichern des Tokens
+
+      // Speichern des Usernames und der Rolle im localStorage
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("role", data.role);
+
+      alert(
+        isLogin
+          ? `Welcome back, ${data.username}!`
+          : `User ${data.username} registered successfully!`
+      );
+
+      // Weiterleitung basierend auf der Rolle
+      if (data.role === "student") {
+        window.location.href = "/studentview";
+      } else if (data.role === "tutor") {
+        window.location.href = "/tutorview";
+      } else if (data.role === "admin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Error details:", error); // Detaillierte Fehlermeldung
+      alert("Error connecting to server.");
+    }
+  };
 
   return (
     <div className="auth-container">
