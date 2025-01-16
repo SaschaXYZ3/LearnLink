@@ -52,6 +52,7 @@ function Header() {
                 <Link to="/tools">TOOLS</Link>
                 <Link to="/connect">CONNECT</Link>
                 <Link to="/browsecatalog">CATALOG</Link>
+                <Link to="/help">HELP</Link>
                 {/* Admin-Dashboard Link nur für Admins sichtbar */}
                 {isLoggedIn && role?.trim().toLowerCase() === "admin" && (
                     <Link to="/admin">ADMIN DASHBOARD</Link>

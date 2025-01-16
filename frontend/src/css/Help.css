@@ -1,0 +1,31 @@
+  body {
+    background-color: rgb(241, 241, 241);
+    margin: 0;
+    font-family: Arial, sans-serif; /* Optional: Schriftart */
+  }
+
+  .card {
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 30px;
+    margin-bottom: 50px;
+  }
+
+  .nav-pills .nav-link {
+    border-radius: 8px; /* Abgerundete Tabs */
+    color: #333; /* Standardfarbe */
+    background-color: #f8f9fa; /* Helles Grau als Hintergrund */
+    margin-bottom: 10px; /* Abstand zwischen Tabs */
+    font-size: 18px; /* Schriftgröße */
+  }
+  
+  .nav-pills .nav-link.active {
+    background-color: #6c757d; /* Aktive Tab-Farbe */
+    color: white; /* Textfarbe für aktive Tabs */
+  }
+
+  .nav-pills .nav-link:hover {
+    background-color: #6c757d;  /* Hintergrundfarbe beim Hover */
+    color: #ffffff; /* Schriftfarbe beim Hover */
+    transform: scale(1.05); /* Leichte Vergrößerung beim Hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Schatteneffekt */
+  }

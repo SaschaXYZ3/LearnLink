@@ -16,6 +16,7 @@ import AdminPanel from "./components/AdminPanel";
 import TutorView from "./components/TutorView";
 import Unauthorized from "./components/Unauthorized";
 import PrivateRoute from "./components/PrivateRoute";
+import Help from "./components/Help";
 
 
 function App() {
@@ -56,7 +57,8 @@ function App() {
         <Route path="/browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-
+        <Route path="/help" element={<Help/>}/>
+        
         {/* Geschützte Routen */}
         <Route
           path="/studentview"
