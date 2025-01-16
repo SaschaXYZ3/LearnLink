@@ -11,19 +11,60 @@ function Forum() {
     const [showModal, setShowModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [newComment, setNewComment] = useState("");
+    const [userId, setUserId] = useState(null);
+    const [userName, setUserName] = useState(null);
 
     // Beiträge beim Laden der Seite aus dem Backend holen
     useEffect(() => {
+        // Fetch posts from the backend
         const fetchPosts = async () => {
             try {
                 const response = await fetch("http://localhost:5001/forum");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch posts");
+                }
                 const data = await response.json();
-                setPosts(data);
+                setPosts(data); // Store posts in the state
             } catch (error) {
                 console.error("Fehler beim Laden der Beiträge:", error);
             }
         };
+
+        // Fetch user data from the backend using the token
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token"); // Get the token from localStorage
+            if (!token) {
+                console.error("No token found");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5001/api/protected", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user data from backend");
+                }
+
+                const data = await response.json();
+                setUserName(data.user.username);
+                setUserId(data.user.id);
+                console.log("User data:", data.user.userName); // Adjust based on your backend's user object
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
+        // Call both fetch functions
         fetchPosts();
+        fetchUserData();
+
+        // Dependency array is empty because this effect runs once on component mount
     }, []);
 
     // Beitrag hinzufügen
@@ -31,11 +72,15 @@ function Forum() {
         event.preventDefault(); // Verhindert das Neuladen der Seite
         if (!newPostTitle.trim() || !newPostContent.trim()) return alert("Bitte alle Felder ausfüllen.");
 
+        if (!userName) {
+            return alert("Benutzername konnte nicht geladen werden.");
+        }
+
         try {
             const response = await fetch("http://localhost:5001/forum", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: newPostTitle, content: newPostContent, username: "Anonymous" }),
+                body: JSON.stringify({ title: newPostTitle, content: newPostContent, username: userName }),
             });
             if (response.ok) {
                 const newPost = await response.json();
@@ -94,7 +139,7 @@ function Forum() {
                 body: JSON.stringify({
                     postId: selectedPost.id,
                     comment: newComment,
-                    username: "Anonymous"
+                    username: userName
                 }),
             });
 
@@ -112,6 +157,7 @@ function Forum() {
             console.error("Fehler beim Hinzufügen des Kommentars:", error);
         }
     };
+
 
     return (
         <Container className="mt-5">
@@ -182,7 +228,7 @@ function Forum() {
                     <ListGroup>
                         {selectedPost?.comments?.map((comment, index) => (
                             <ListGroup.Item key={index}>
-                                <strong>{comment.username}</strong>: {comment.comment}
+                                <strong>{comment.username}</strong>: {comment.content}
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
