@@ -48,6 +48,40 @@ const TutorView = () => {
   const [userId, setUserId] = useState(null); // Store user ID
   //const [loading, setLoading] = useState(true); // Loading state for user data
   const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+  const [pendingBookings, setPendingBookings] = useState([]);
+
+  useEffect(() => {
+    if (!userId || !token) return; // Ensure we have userId and token
+
+    const fetchPendingBookings = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/tutors/${userId}/pending-bookings`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch pending bookings");
+        }
+
+        const data = await response.json();
+        console.log("Pending bookings fetched:", data); // Prüfen der API-Antwort
+
+        setPendingBookings(data); // Setze die erhaltenen Daten im Zustand
+      } catch (error) {
+        console.error("Error fetching pending bookings:", error);
+      }
+    };
+    fetchPendingBookings();
+  }, [userId, token]); // Dependencies: fetch whenever userId or token changes
+
+  // Fetch courses or other related data (if needed)
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -64,7 +98,7 @@ const TutorView = () => {
         }
 
         const data = await response.json();
-        setCourses(data); // Setzt die geladenen Kurse in den State
+        setCourses(data); // Store fetched courses in state
       } catch (error) {
         console.error("Error fetching your courses:", error);
       }
@@ -72,6 +106,7 @@ const TutorView = () => {
 
     fetchCourses();
   }, [token]);
+
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
@@ -256,56 +291,64 @@ const TutorView = () => {
       <Container>
         <h2>Pending Bookings</h2>
         <ListGroup>
-          {bookings.map((booking, index) => (
-            <ListGroup.Item
-              key={index}
-              className="d-flex justify-content-between align-items-center"
-            >
-              <div>
-                <strong>{booking.studentName}</strong> requested to join{" "}
-                <em>{booking.course}</em>
-              </div>
-              <Badge bg={booking.status === "Pending" ? "warning" : "success"}>
-                {booking.status}
-              </Badge>
-              {booking.status === "Pending" && (
-                <>
-                  <Button
-                    variant="success"
-                    size="sm"
-                    onClick={() => acceptBooking(index)}
-                  >
-                    <FontAwesomeIcon icon={faUserCheck} /> Accept
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => rejectBooking(index)}
-                  >
-                    <FontAwesomeIcon icon={faTimesCircle} /> Reject
-                  </Button>
-                </>
-              )}
-              {booking.status === "Accepted" && (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => moveToPending(index)}
-                  >
-                    <FontAwesomeIcon icon={faArrowLeft} /> Move to Pending
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => removeBooking(index)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} /> Remove
-                  </Button>
-                </>
-              )}
-            </ListGroup.Item>
-          ))}
+          {pendingBookings.length === 0 ? (
+            <p>No pending bookings found.</p>
+          ) : (
+            pendingBookings.map((booking) => (
+              <ListGroup.Item
+                key={booking.enrollmentId}
+                className="d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <strong>{booking.studentName}</strong> requested to join{" "}
+                  <em>{booking.courseName}</em>
+                </div>
+                <Badge
+                  bg={
+                    booking.bookingStatus === "Pending" ? "warning" : "success"
+                  }
+                >
+                  {booking.bookingStatus}
+                </Badge>
+                {booking.bookingStatus === "Pending" && (
+                  <>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => acceptBooking(booking.enrollmentId)}
+                    >
+                      <FontAwesomeIcon icon={faUserCheck} /> Accept
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => rejectBooking(booking.enrollmentId)}
+                    >
+                      <FontAwesomeIcon icon={faTimesCircle} /> Reject
+                    </Button>
+                  </>
+                )}
+                {booking.bookingStatus === "Accepted" && (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => moveToPending(booking.enrollmentId)}
+                    >
+                      <FontAwesomeIcon icon={faArrowLeft} /> Move to Pending
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => removeBooking(booking.enrollmentId)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} /> Remove
+                    </Button>
+                  </>
+                )}
+              </ListGroup.Item>
+            ))
+          )}
         </ListGroup>
       </Container>
 
