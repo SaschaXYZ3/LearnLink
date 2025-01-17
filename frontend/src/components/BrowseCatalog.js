@@ -16,7 +16,6 @@ import {
   faList,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios"; // Installiere axios, falls noch nicht installiert
 
 import "../css/BrowseCatalog.css";
 
@@ -33,6 +32,8 @@ function BrowseCatalog() {
 
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
 
+
+
   // useEffect, um Daten vom Backend zu laden
   useEffect(() => {
     const fetchCourses = async () => {
@@ -41,6 +42,7 @@ function BrowseCatalog() {
         const response = await axios.get("http://localhost:5001/api/courses");
          /*headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
           },
         });
         */
@@ -53,7 +55,6 @@ function BrowseCatalog() {
         setIsLoading(false);
       }
     };
-
     fetchCourses();
   }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
 
@@ -65,26 +66,48 @@ function BrowseCatalog() {
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     if (sortOption === "rating") {
-      return b.rating - a.rating;
+      return b.averageRating - a.averageRating;
     } else if (sortOption === "title") {
       return a.title.localeCompare(b.title);
     }
     return 0;
   });
 
-  const toggleFavorite = (courseTitle) => {
+ 
+  const toggleFavorite = async (courseId) => {
     if (!isLoggedIn) {
       alert("Please log in to add courses to your favorites!");
       navigate("/register");
       return;
     }
-
-    const updatedCourses = courses.map((course) =>
-      course.title === courseTitle
-        ? { ...course, favorited: !course.favorited }
-        : course
-    );
-    setCourses(updatedCourses);
+  
+    try {
+      // API-Aufruf zum Aktualisieren des Favoritenstatus
+      const response = await fetch(`http://localhost:5001/api/courses/${courseId}/favorite`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}), 
+      });
+  
+      // Überprüfen, ob die Anfrage erfolgreich war
+      if (!response.ok) {
+        throw new Error(`Fehler: ${response.status}`);
+      }
+  
+      const data = await response.json(); // Antwortdaten parsen
+  
+      // Favoritenstatus im State aktualisieren
+      const updatedCourses = courses.map((course) =>
+        course.id === courseId ? { ...course, isFavorite: data.isFavorite } : course
+      );
+      setCourses(updatedCourses);
+    } catch (err) {
+      console.error("Fehler beim Aktualisieren des Favoritenstatus: ", err);
+      alert("Fehler beim Aktualisieren des Favoritenstatus.");
+    }
   };
 
   const handleBooking = (courseTitle) => {
@@ -126,6 +149,7 @@ function BrowseCatalog() {
           <option value="IT Security">IT Security</option>
           <option value="Mathematics">Mathematics</option>
           <option value="Computer Science">Computer Science</option>
+          <option value="Network Technologies">Network Technologies</option>
         </Form.Select>
         <Form.Select
           value={sortOption}
@@ -159,39 +183,46 @@ function BrowseCatalog() {
                 <Card.Title>{course.title}</Card.Title>
                 <Card.Text>
                   <strong>Kategorie:</strong> {course.category} <br />
-                  <strong>Dozent:</strong> {course.instructor} <br />
-                  <strong>Bewertung:</strong> {course.rating}{" "}
-                  <FontAwesomeIcon icon={faStar} style={{ color: "#FFD700" }} />{" "}
-                  ({course.reviews} Bewertungen)
+                  <strong>Bewertung:</strong> {course.averageRating?.toFixed(1)}{" "}
+                  <FontAwesomeIcon icon={faStar} style={{ color: "#FFD700" }} />
+                  ({course.course_reviews?.length || 0} Bewertungen)
                 </Card.Text>
+
                 <ProgressBar
-                  now={(course.enrolled / course.capacity) * 100}
-                  label={`${course.enrolled}/${course.capacity} Belegt`}
+                  now={(() => {
+                    // Wenn actualStudents oder maxStudents nicht vorhanden sind, gehe mit einem Default-Wert vor
+                    const actual = course.actualStudents || 0; // Standardwert 0, falls keine Studenten vorhanden sind
+                    const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
+                    return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
+                  })()}
+                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
+                    } Belegt`} // Anzeige der belegten Plätze
                   variant={
-                    course.enrolled === course.capacity ? "danger" : "info"
-                  }
+                    course.actualStudents === course.maxStudents
+                      ? "danger"
+                      : "info"
+                  } // Rote Farbe, wenn der Kurs voll ist
                   className="mb-3"
                 />
+
                 <div className="button-group">
                   <OverlayTrigger
                     placement="top"
                     overlay={<Tooltip>Zu Favoriten hinzufügen</Tooltip>}
                   >
                     <Button
-                      variant={course.favorited ? "danger" : "outline-danger"}
-                      onClick={() => toggleFavorite(course.title)}
+                      variant={course.isFavorite ? "danger" : "outline-danger"}
+                      onClick={() => toggleFavorite(course.id)}
                     >
                       <FontAwesomeIcon icon={faHeart} />
                     </Button>
                   </OverlayTrigger>
                   <Button
                     className="btn-primary"
-                    onClick={() => handleBooking(course.title)}
-                    disabled={
-                      course.enrolled === course.capacity || course.requested
-                    }
+                    onClick={() => handleBooking(course.id)}
+                    disabled={course.actualStudents === course.maxStudents}
                   >
-                    {course.requested ? "Kurs angefordert" : "Jetzt buchen"}
+                    Jetzt buchen
                   </Button>
                 </div>
               </Card.Body>
