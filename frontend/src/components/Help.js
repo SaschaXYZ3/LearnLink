@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/Help.css"; // Stelle sicher, dass deine CSS-Datei hier importiert ist
+import "../css/Help.css";
 import { Link } from "react-router-dom";
+import ContactForm from './ContactForm';
 
 const Help = () => {
   const [activeTab, setActiveTab] = useState("general");
@@ -380,16 +381,7 @@ const Help = () => {
         return (
           <div className="card">
             <div className="card-body">
-              <h2 className="mb-4">Support</h2>
-              <strong>Do you still have questions? Contact us!</strong>
-              <ul>
-                <li>
-                  <strong>Email:</strong> support@learnlink.com
-                </li>
-                <li>
-                  <strong>Phone:</strong> +49 123 456 789
-                </li>
-              </ul>
+           <ContactForm />
             </div>
           </div>
         );
