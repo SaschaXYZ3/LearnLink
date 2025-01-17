@@ -1,21 +1,20 @@
 /* AuthForm.css */
 
 .auth-container {
-    max-width: 500px;
+    max-width: 600px;
     margin: 50px auto;
     padding: 30px;
-    border: 1px solid #ccc;
+    border: 1px solid #bec5c1;
     border-radius: 8px;
-    background-color: #d6d1f5;
+    background-color: #e3eeea;
     box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
   }
-  
   
   h2 {
     text-align: center;
     color: #333;
   }
-  
+
   form {
     display: flex;
     flex-direction: column;
@@ -41,7 +40,7 @@
   }
   
   input:focus {
-    border-color: #007BFF;
+    border-color: #93c8ca;
     outline: none;
   }
   
@@ -77,9 +76,10 @@
   }
   
   .toggle-button:hover {
-    color: #0056b3;
+    color: #aae9e4;
   }
 
+  
 
   
 

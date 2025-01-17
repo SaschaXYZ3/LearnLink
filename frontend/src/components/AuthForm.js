@@ -100,9 +100,9 @@ const AuthForm = () => {
           <>
             <div className="form-group mt-3">
               <label>Role:</label>
-              <div className="d-flex justify-content-center mt-2">
+              <div className="role-section d-flex justify-content-center mt-2">
                 <br />
-                <div className="form-check form-check-inline">
+                <div className="form-check">
                   <input
                     className="form-check-input"
                     type="radio"
@@ -116,7 +116,7 @@ const AuthForm = () => {
                     Student
                   </label>
                 </div>
-                <div className="form-check form-check-inline">
+                <div className="form-check">
                   <input
                     className="form-check-input"
                     type="radio"
