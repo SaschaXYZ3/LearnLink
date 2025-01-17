@@ -228,6 +228,32 @@ body {
     color: white;
 }
 
+.rating-star {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.rating-star.filled {
+    color: #FFD700;
+}
+
+.rating-star.empty {
+    color: #ccc;
+}
+
+  /* CSS für das Grid-Layout */
+.bookings-container.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.bookings-container.list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 /* Responsive Anpassungen */
 @media (max-width: 768px) {
     .navbar-custom {
