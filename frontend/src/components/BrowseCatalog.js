@@ -34,7 +34,7 @@ function BrowseCatalog() {
 
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
-
+  const token = localStorage.getItem("token");
 
   // useEffect, um Daten vom Backend zu laden
   useEffect(() => {
@@ -42,7 +42,7 @@ function BrowseCatalog() {
       try {
         setIsLoading(true);
         const response = await axios.get("http://localhost:5001/api/courses");
-         /*headers: {
+        /*headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
@@ -50,7 +50,6 @@ function BrowseCatalog() {
         */
         setCourses(response.data); // Kurse setzen
         setIsLoading(false);
-        
       } catch (err) {
         console.error("Error fetching courses: ", err);
         setError("Fehler beim Laden der Kursdaten.");
@@ -61,8 +60,12 @@ function BrowseCatalog() {
   }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
 
   const filteredCourses = courses.filter((course) => {
-    const matchesSearchTerm = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory ? course.category === filterCategory : true;
+    const matchesSearchTerm = course.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory
+      ? course.category === filterCategory
+      : true;
     const matchesFavorites = showFavorites ? course.isFavorite : true;
     return matchesSearchTerm && matchesCategory && matchesFavorites;
   });
@@ -76,7 +79,6 @@ function BrowseCatalog() {
     return 0;
   });
 
-
   const toggleFavorite = async (courseId) => {
     if (!isLoggedIn) {
       alert("Please log in to add courses to your favorites!");
@@ -86,14 +88,17 @@ function BrowseCatalog() {
 
     try {
       // API-Aufruf zum Aktualisieren des Favoritenstatus
-      const response = await fetch(`http://localhost:5001/api/courses/${courseId}/favorite`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        `http://localhost:5001/api/courses/${courseId}/favorite`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${"token"}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
 
       // Überprüfen, ob die Anfrage erfolgreich war
       if (!response.ok) {
@@ -104,7 +109,9 @@ function BrowseCatalog() {
 
       // Favoritenstatus im State aktualisieren
       const updatedCourses = courses.map((course) =>
-        course.id === courseId ? { ...course, isFavorite: data.isFavorite } : course
+        course.id === courseId
+          ? { ...course, isFavorite: data.isFavorite }
+          : course
       );
       setCourses(updatedCourses);
     } catch (err) {
@@ -113,18 +120,28 @@ function BrowseCatalog() {
     }
   };
 
-  const handleBooking = (courseTitle) => {
-    if (!isLoggedIn) {
-      alert("Please log in to book a course!");
-      navigate("/register");
-      return;
+  const handleBooking = async (courseId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/book/${courseId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        alert(data.error); // Zeigt den Fehler an, falls es einen gibt
+      } else {
+        alert(data.message); // Erfolgsnachricht anzeigen
+      }
+    } catch (error) {
+      console.error("Fehler beim Buchen:", error);
+      alert("Fehler beim Buchen des Kurses.");
     }
-
-    const updatedCourses = courses.map((course) =>
-      course.title === courseTitle ? { ...course, requested: true } : course
-    );
-    setCourses(updatedCourses);
-    alert("Course successfully requested!"); // Platzhalteraktion
   };
 
   return (
@@ -165,7 +182,9 @@ function BrowseCatalog() {
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""}`}
+        className={`filter-favorites mb-3 ${
+          showFavorites ? "favorite-active" : ""
+        }`}
         onClick={() => setShowFavorites(!showFavorites)}
       >
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
@@ -206,8 +225,9 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
-                    } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${
+                    course.maxStudents > 0 ? course.maxStudents : 1
+                  } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"
