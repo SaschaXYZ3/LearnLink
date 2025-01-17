@@ -17,6 +17,7 @@ import {
   faUserCheck,
   faTimesCircle,
   faArrowLeft,
+  faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/TutorView.css";
 import jwt_decode from "jwt-decode";
@@ -49,6 +50,15 @@ const TutorView = () => {
   //const [loading, setLoading] = useState(true); // Loading state for user data
   const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
   const [pendingBookings, setPendingBookings] = useState([]);
+
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Funktion zum Öffnen des Modals und Setzen des ausgewählten Kurses
+  const handleShowModal = (course) => {
+    setSelectedCourse(course);
+    setShowModal(true);
+  };
 
   useEffect(() => {
     if (!token) {
@@ -252,6 +262,24 @@ const TutorView = () => {
     }
   };
 
+  const listStudents = async (courseId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/courses/${courseId}/users`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Failed to read users from course:", error);
+      alert("Failed to read users from course. Please try again later.");
+    }
+  };
+
   const moveToPending = (index) => {
     const updatedBookings = [...bookings];
     updatedBookings[index].status = "Pending";
@@ -322,6 +350,9 @@ const TutorView = () => {
                   <strong>Course:</strong> {course.subcategory} <br />
                   <strong>Level:</strong> {course.level} <br />
                   <strong>Max Students:</strong> {course.maxStudents || "N/A"}
+                  <br />
+                  <strong>Occupied seats: </strong>
+                  {"Placeholder"}
                   {/* Fallback, falls kein Wert vorhanden */}
                 </Card.Text>
                 <Button
@@ -331,11 +362,63 @@ const TutorView = () => {
                 >
                   <FontAwesomeIcon icon={faTrash} /> Delete
                 </Button>
+                <Button
+                  variant="warning"
+                  size="sm"
+                  onClick={() => handleShowModal(course)}
+                >
+                  <FontAwesomeIcon icon={faAddressCard} /> Students
+                </Button>
               </Card.Body>
             </Card>
           ))}
         </div>
       </Container>
+
+      {/* Modal für Kursdetails */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedCourse?.title} Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            <strong>Subject:</strong> {selectedCourse?.category}
+          </p>
+          <p>
+            <strong>Course:</strong> {selectedCourse?.subcategory}
+          </p>
+          <p>
+            <strong>Level:</strong> {selectedCourse?.level}
+          </p>
+          <p>
+            <strong>Max Students:</strong>{" "}
+            {selectedCourse?.maxStudents || "N/A"}
+          </p>
+          <p>
+            <strong>Current Participants:</strong>{" "}
+            {selectedCourse?.participants?.length || 0}
+          </p>
+          <hr />
+          <h5>Participants</h5>
+          <ListGroup>
+            {selectedCourse?.participants?.length > 0 ? (
+              selectedCourse.participants.map((participant, index) => (
+                <ListGroup.Item key={index}>
+                  {participant.name} ({participant.email})
+                </ListGroup.Item>
+              ))
+            ) : (
+              <ListGroup.Item>No participants yet.</ListGroup.Item>
+            )}
+          </ListGroup>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+              
+      </Modal>
 
       {/* Pending Bookings Section */}
       <Container>
