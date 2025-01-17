@@ -193,16 +193,63 @@ const TutorView = () => {
     });
   };
 
-  const acceptBooking = (index) => {
-    const updatedBookings = [...bookings];
-    updatedBookings[index].status = "Accepted";
-    setBookings(updatedBookings);
+  const acceptBooking = async (enrollmentId) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/enrollments/${enrollmentId}/accept`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to accept booking");
+      }
+
+      const updatedBooking = await response.json();
+      console.log("Booking accepted:", updatedBooking);
+
+      setPendingBookings((prevBookings) =>
+        prevBookings.filter((booking) => booking.enrollmentId !== enrollmentId)
+      );
+    } catch (error) {
+      console.error("Error accepting booking:", error.message);
+    }
   };
 
-  const rejectBooking = (index) => {
-    const updatedBookings = [...bookings];
-    updatedBookings.splice(index, 1);
-    setBookings(updatedBookings);
+  const rejectBooking = async (enrollmentId) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/enrollments/${enrollmentId}/reject`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to reject booking");
+      }
+      const updatedBookings = await response.json();
+      console.log("Booking rejected: ", updatedBookings);
+
+      setPendingBookings((prevBookings) =>
+        prevBookings.filter((booking) => booking.enrollmentId !== enrollmentId)
+      );
+    } catch (error) {
+      console.error("Error accepting booking:", error.message);
+    }
   };
 
   const moveToPending = (index) => {
@@ -335,13 +382,6 @@ const TutorView = () => {
                 )}
                 {booking.bookingStatus === "Accepted" && (
                   <>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => moveToPending(booking.enrollmentId)}
-                    >
-                      <FontAwesomeIcon icon={faArrowLeft} /> Move to Pending
-                    </Button>
                     <Button
                       variant="danger"
                       size="sm"
