@@ -1,167 +1,208 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "../css/EditProfile.css";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // Standard-Import
+import { jwtDecode } from "jwt-decode";
 
 function EditProfile() {
   const [userData, setUserData] = useState({
-    name: "",
-    role: "",
+    username: "",
     email: "",
-    birthdate: "",
-    profileImageUrl: "",
+    birthDate: "",
+    password: "",
   });
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const [isEditing, setIsEditing] = useState(false); // Bearbeitungsmodus
-  const [newImage, setNewImage] = useState(null); // Neues Profilbild
-  const [imagePreview, setImagePreview] = useState(null); // Vorschau für das neue Bild
-
-  // Funktion, um die Benutzer-ID aus dem Token zu extrahieren
-  const getUserIdFromToken = useCallback(() => {
+  // Benutzer-ID aus dem Token extrahieren
+  const getUserIdFromToken = () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
         return decoded.id || decoded.userId;
-      } catch (error) {
-        console.error("Error decoding token:", error);
+      } catch (err) {
+        console.error("Error decoding token:", err);
         return null;
       }
     }
     return null;
-  }, []);
+  };
 
   // Benutzerinformationen vom Server abrufen
-  const fetchUserData = useCallback(async () => {
-    const id = getUserIdFromToken();
-    if (!id) {
-      console.error("User ID not found. Please check the token.");
-      return;
-    }
+  useEffect(() => {
+    if (!isEditing) {
+      const fetchUserData = async () => {
+        const userId = getUserIdFromToken();
+        if (!userId) {
+          console.error("User ID not found. Please check the token.");
+          return;
+        }
 
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`/api/user/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUserData({
-        name: response.data.username,
-        role: response.data.role,
-        email: response.data.email,
-        birthdate: response.data.birthDate,
-        profileImageUrl: response.data.profileImageUrl,
-      });
-    } catch (error) {
-      console.error("Error fetching user data:", error);
+        setIsLoading(true);
+        try {
+          const response = await fetch("http://localhost:5001/api/user", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Fehler beim Laden der Benutzerdaten.");
+          }
+
+          const data = await response.json();
+          setUserData({
+            username: data.username,
+            email: data.email,
+            birthDate: data.birthDate,
+            //password: data.password,
+          });
+          setIsLoading(false);
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          setError("Fehler beim Laden der Benutzerdaten.");
+          setIsLoading(false);
+        }
+      };
+
+      fetchUserData();
     }
-  }, [getUserIdFromToken]);
+  }, [isEditing]); // Läuft nur, wenn isEditing geändert wird
 
   // Eingaben in den Feldern aktualisieren
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    setUserData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+
+    }));
   };
 
-  // Profilbild-Upload verarbeiten
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setNewImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
+  // Aktualisiere das aktuelle Passwort
+  const handleCurrentPasswordChange = (e) => {
+    setCurrentPassword(e.target.value);
+  };
+
+  // Aktualisiere das neue Passwort
+  const handleNewPasswordChange = (e) => {
+    setNewPassword(e.target.value);
   };
 
   // Änderungen speichern
   const handleSave = async () => {
-    const formData = new FormData();
-    formData.append("email", userData.email);
-    formData.append("birthdate", userData.birthdate);
-
-    if (newImage) {
-      formData.append("profileImage", newImage);
-    }
+    const payload = {
+      username: userData.username,
+      email: userData.email,
+      birthDate: userData.birthDate,
+      ...(newPassword && {
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      }),
+    };
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(`/api/user/update`, formData, {
+      const response = await fetch("http://localhost:5001/api/user/update", {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify(payload),
       });
 
-      alert("Profile updated successfully!");
-      setUserData(response.data);
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Fehler"); 
+      }
+
+      const updatedData = await response.json();
+      setUserData({
+        username: updatedData.username,
+        email: updatedData.email,
+        birthDate: updatedData.birthDate,
+      });
+
       setIsEditing(false);
-      setImagePreview(null); // Vorschau zurücksetzen
-      setNewImage(null); // Bild-Upload zurücksetzen
+      alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("There was an error updating your profile.");
+      alert("Es gab einen Fehler beim Aktualisieren des Profils.");
     }
   };
-
-  // Daten beim ersten Rendern laden
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
 
   return (
     <section className="profile-section">
       <div className="profile-container">
         <div className="profile-header">
-          {/* Zeigt das Profilbild an, wenn es vorhanden ist */}
-          <img
-            src={userData.profileImageUrl || "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"}
-            alt="User Avatar"
-            className="profile-avatar"
-          />
-          <h2>{userData.name}</h2>
-  
-          {/* Rolle ist nicht bearbeitbar, wird nur angezeigt */}
-          <p>{userData.role}</p>
-  
-          {/* Toggle Button für Editieren */}
+          <h2>{userData.username}</h2>
+          <p>{userData.email}</p>
+          <p>{userData.birthDate}</p>
           <button onClick={() => setIsEditing(!isEditing)}>
             {isEditing ? "Cancel" : "Edit Profile"}
           </button>
         </div>
-  
+
         <div className="profile-details">
-          <h3>Personal Information</h3>
-          {/* Zeigt Email und Geburtsdatum an, bevor Editiermodus aktiviert wird */}
-          <p><strong>Email:</strong> {userData.email}</p>
-          <p><strong>Birthdate:</strong> {userData.birthdate}</p>
-  
-          {/* Bearbeitungsmodus */}
-          {isEditing && (
+          {isEditing ? (
             <>
               <input
+                className="mb-3"
                 type="text"
+                name="username"
+                value={userData.username}
+                onChange={handleInputChange}
+                placeholder="Username"
+              />
+
+              <input
+                className="mb-3"
+                type="email"
                 name="email"
                 value={userData.email}
                 onChange={handleInputChange}
+                placeholder="Email"
               />
+
               <input
+                className="mb-3"
                 type="date"
-                name="birthdate"
-                value={userData.birthdate}
+                name="birthDate"
+                value={userData.birthDate}
                 onChange={handleInputChange}
               />
-  
-              <input type="file" onChange={handleImageChange} />
-              {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
-  
+
+              <input
+                className="mb-3"
+                type="password"
+                value={currentPassword}
+                onChange = {handleCurrentPasswordChange}
+                placeholder="Current Password"
+              />
+
+              <input
+                className="mb-3"
+                type="password"
+                value={newPassword}
+                onChange = {handleNewPasswordChange}
+                placeholder="New Password"
+              />
+
               <button onClick={handleSave}>Save Changes</button>
+            </>
+          ) : (
+            <>
+              <p><strong>Username:</strong> {userData.username}</p>
+              <p><strong>Email:</strong> {userData.email}</p>
+              <p><strong>Birthdate:</strong> {userData.birthDate}</p>
             </>
           )}
         </div>
       </div>
     </section>
   );
-  
 }
 
 export default EditProfile;

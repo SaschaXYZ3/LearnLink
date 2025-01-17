@@ -36,7 +36,6 @@ function BrowseCatalog() {
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
 
 
-
   // useEffect, um Daten vom Backend zu laden
   useEffect(() => {
     const fetchCourses = async () => {

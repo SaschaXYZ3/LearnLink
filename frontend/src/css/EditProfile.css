@@ -65,6 +65,7 @@ body {
 /* Eingabefelder */
 input[type="text"],
 input[type="date"],
+input[type="password"], /* Hinzugefügt: Password-Felder */
 button {
     width: 100%;
     padding: 10px;
@@ -80,6 +81,12 @@ input:focus {
     outline: none;
 }
 
+/* Zusätzlich: Stil für das Bearbeiten von Feldern */
+input[disabled] {
+    background-color: #f9f9f9;
+    color: #bbb;
+}
+
 /* Button Styling */
 button {
     cursor: pointer;
@@ -93,6 +100,15 @@ button {
 
 button:hover {
     background: #5F7A8A;
+}
+
+/* Anpassungen für den Bearbeitungsmodus */
+.profile-container.editing input {
+    background-color: #fff; /* Weißer Hintergrund für editierbare Felder */
+}
+
+.profile-container.editing input:disabled {
+    background-color: #f0f0f0; /* Hellerer Hintergrund für nicht bearbeitbare Felder */
 }
 
 @media (max-width: 768px) {
