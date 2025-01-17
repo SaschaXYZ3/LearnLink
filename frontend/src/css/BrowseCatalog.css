@@ -401,8 +401,33 @@ body {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Mehr Schatten beim Hover */
     transform: translateY(-2px); /* Leichter Hover-Effekt */
 }
-
-
+.filter-favorites {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: gray;
+    transition: color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .filter-favorites:hover {
+    transform: scale(1.01);
+  }
+  
+  .filter-favorites .ms-2 {
+    font-size: 1rem;
+    margin-left: 8px;
+  }
+  
+  /* Zustand für aktives Herz */
+  .filter-favorites svg {
+    color: gray;
+    transition: color 0.3s ease;
+  }
+  
+  .filter-favorites.favorite-active svg {
+    color: red;
+  }
 
 /* Responsive Design */
 @media (max-width: 768px) {
