@@ -138,13 +138,6 @@ const TutorView = () => {
   const handleTimeChange = (time) => {
     setNewCourse({ ...newCourse, time });
   };
-  /*
-    const addCourse = () => {
-        setCourses([...courses, newCourse]);
-        setShowAddModal(false);
-        resetForm();
-    };
-*/
 
   const addCourse = async () => {
     try {
