@@ -10,11 +10,12 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHeart,
+  faHeart as faSolidHeart,
   faStar,
   faList,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faRegularHeart } from "@fortawesome/free-regular-svg-icons";
 
 import "../css/BrowseCatalog.css";
 
@@ -26,6 +27,7 @@ function BrowseCatalog() {
   const [sortOption, setSortOption] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Ladeszustand hinzufügen
   const [error, setError] = useState(null); // Fehlerbehandlung hinzufügen
+  const [showFavorites, setShowFavorites] = useState(false); // State für favoriten
 
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
 
@@ -63,11 +65,12 @@ function BrowseCatalog() {
     fetchCourses();
   }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
 
-  const filteredCourses = courses.filter(
-    (course) =>
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filterCategory ? course.category === filterCategory : true)
-  );
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearchTerm = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory ? course.category === filterCategory : true;
+    const matchesFavorites = showFavorites ? course.isFavorite : true;
+    return matchesSearchTerm && matchesCategory && matchesFavorites;
+  });
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     if (sortOption === "rating") {
@@ -78,13 +81,13 @@ function BrowseCatalog() {
     return 0;
   });
 
- 
+
   const toggleFavorite = async (courseId) => {
     if (!isLoggedIn) {
       alert("Bitte melde dich an, um Kurse zu den Favoriten hinzuzufügen!");
       return;
     }
-  
+
     try {
       // API-Aufruf zum Aktualisieren des Favoritenstatus
       const response = await fetch(`http://localhost:5001/api/courses/${courseId}/favorite`, {
@@ -93,16 +96,16 @@ function BrowseCatalog() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}), 
+        body: JSON.stringify({}),
       });
-  
+
       // Überprüfen, ob die Anfrage erfolgreich war
       if (!response.ok) {
         throw new Error(`Fehler: ${response.status}`);
       }
-  
+
       const data = await response.json(); // Antwortdaten parsen
-  
+
       // Favoritenstatus im State aktualisieren
       const updatedCourses = courses.map((course) =>
         course.id === courseId ? { ...course, isFavorite: data.isFavorite } : course
@@ -179,6 +182,14 @@ function BrowseCatalog() {
         </Form.Select>
       </Form>
 
+      <div
+        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""}`}
+        onClick={() => setShowFavorites(!showFavorites)}
+      >
+        <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
+        <span className="ms-2">Nur Favoriten anzeigen</span>
+      </div>
+
       {isLoading ? (
         <div>Loading courses...</div>
       ) : error ? (
@@ -232,7 +243,7 @@ function BrowseCatalog() {
                       variant={course.isFavorite ? "danger" : "outline-danger"}
                       onClick={() => toggleFavorite(course.id)}
                     >
-                      <FontAwesomeIcon icon={faHeart} />
+                      <FontAwesomeIcon icon={faSolidHeart} />
                     </Button>
                   </OverlayTrigger>
                   <Button
