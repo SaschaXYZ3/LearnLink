@@ -15,7 +15,6 @@ import {
   faList,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios"; // Installiere axios, falls noch nicht installiert
 
 import "../css/BrowseCatalog.css";
 
@@ -30,17 +29,30 @@ function BrowseCatalog() {
 
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
 
+
+
   // useEffect, um Daten vom Backend zu laden
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:5001/api/courses", {
+
+        // Abrufen der Daten mit fetch
+        const response = await fetch("http://localhost:5001/api/courses", {
+          method: "GET",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
           },
         });
-        setCourses(response.data); // Daten aus der API in den State setzen
+
+        // Überprüfen, ob die Anfrage erfolgreich war
+        if (!response.ok) {
+          throw new Error(`Fehler: ${response.status}`);
+        }
+
+        const data = await response.json(); // Parsen der Antwortdaten
+        setCourses(data); // Daten aus der API in den State setzen
         setIsLoading(false);
       } catch (err) {
         console.error("Error fetching courses: ", err);
@@ -48,7 +60,6 @@ function BrowseCatalog() {
         setIsLoading(false);
       }
     };
-
     fetchCourses();
   }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
 
@@ -67,43 +78,34 @@ function BrowseCatalog() {
     return 0;
   });
 
-  /*const toggleFavorite = (courseId) => {
-    if (!isLoggedIn) {
-      alert("Please log in to add courses to your favorites!");
-      return;
-    }
-
-    const updatedCourses = courses.map((course) =>
-      course.id === courseId
-        ? { ...course, isFavorite: !course.isFavorite }
-        : course
-    );
-    setCourses(updatedCourses);
-  };*/
-
+ 
   const toggleFavorite = async (courseId) => {
     if (!isLoggedIn) {
       alert("Bitte melde dich an, um Kurse zu den Favoriten hinzuzufügen!");
       return;
     }
-
+  
     try {
       // API-Aufruf zum Aktualisieren des Favoritenstatus
-      const response = await axios.post(
-        `http://localhost:5001/api/courses/${courseId}/favorite`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
+      const response = await fetch(`http://localhost:5001/api/courses/${courseId}/favorite`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}), 
+      });
+  
+      // Überprüfen, ob die Anfrage erfolgreich war
+      if (!response.ok) {
+        throw new Error(`Fehler: ${response.status}`);
+      }
+  
+      const data = await response.json(); // Antwortdaten parsen
+  
       // Favoritenstatus im State aktualisieren
       const updatedCourses = courses.map((course) =>
-        course.id === courseId
-          ? { ...course, isFavorite: response.data.isFavorite }
-          : course
+        course.id === courseId ? { ...course, isFavorite: data.isFavorite } : course
       );
       setCourses(updatedCourses);
     } catch (err) {
@@ -211,9 +213,8 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${
-                    course.maxStudents > 0 ? course.maxStudents : 1
-                  } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
+                    } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"

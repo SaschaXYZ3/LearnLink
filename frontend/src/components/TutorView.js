@@ -140,7 +140,7 @@ const TutorView = () => {
         userId, // Wird benötigt, um den Kurs dem Tutor zuzuordnen
       };
       console.log("Userid:", userId);
-      console.log("USer-Token:", token);
+      console.log("User-Token:", token);
       //const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:5001/api/courses", {
         method: "POST",
