@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Button,
@@ -27,6 +28,8 @@ function BrowseCatalog() {
   const [sortOption, setSortOption] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Ladeszustand hinzufügen
   const [error, setError] = useState(null); // Fehlerbehandlung hinzufügen
+  const navigate = useNavigate();
+
 
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
 
@@ -35,13 +38,15 @@ function BrowseCatalog() {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:5001/api/courses", {
-          headers: {
+        const response = await axios.get("http://localhost:5001/api/courses");
+         /*headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setCourses(response.data); // Daten aus der API in den State setzen
+        */
+        setCourses(response.data); // Kurse setzen
         setIsLoading(false);
+        
       } catch (err) {
         console.error("Error fetching courses: ", err);
         setError("Fehler beim Laden der Kursdaten.");
@@ -70,6 +75,7 @@ function BrowseCatalog() {
   const toggleFavorite = (courseTitle) => {
     if (!isLoggedIn) {
       alert("Please log in to add courses to your favorites!");
+      navigate("/register");
       return;
     }
 
@@ -84,6 +90,7 @@ function BrowseCatalog() {
   const handleBooking = (courseTitle) => {
     if (!isLoggedIn) {
       alert("Please log in to book a course!");
+      navigate("/register");
       return;
     }
 

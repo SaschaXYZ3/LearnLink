@@ -35,26 +35,26 @@ const Help = () => {
 
               {/* New content: First Steps */}
               {/* New content: First Steps */}
-<h3 className="mt-5 mb-4">Your First Steps on Learnlink</h3>
+          <h3 className="mt-5 mb-4">Your First Steps on Learnlink</h3>
 
-<h4 className="mb-3">For Students</h4>
-<ol style={{ fontSize: "18px", lineHeight: "1.8", marginBottom: "30px" }}>
-  <li>
-    <strong>Register: </strong>{" "}
-    <Link
-      to="/register"
-      style={{ textDecoration: "none", color: "blue" }}
-    >
-      Create your account and join our community of learners.
-    </Link>{" "}
-    It's quick, simple, and your first step toward success.
-  </li>
-  <li>
-    <strong>Search Courses: </strong>{" "}
-    <Link
-      to="/browsecatalog"
-      style={{ textDecoration: "none", color: "blue" }}
-      > Explore our wide range of courses.
+          <h4 className="mb-3">For Students</h4>
+          <ol style={{ fontSize: "18px", lineHeight: "1.8", marginBottom: "30px" }}>
+            <li>
+              <strong>Register: </strong>{" "}
+              <Link
+                to="/register"
+                style={{ textDecoration: "none", color: "blue" }}
+              >
+                Create your account and join our community of learners.
+              </Link>{" "}
+              It's quick, simple, and your first step toward success.
+            </li>
+            <li>
+              <strong>Search Courses: </strong>{" "}
+              <Link
+                to="/browsecatalog"
+                style={{ textDecoration: "none", color: "blue" }}
+                > Explore our wide range of courses.
                 </Link>{" "}
                 Filter by topic, difficulty level, or even language—whatever suits your learning style best!
               </li>
