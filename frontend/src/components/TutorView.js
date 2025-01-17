@@ -51,12 +51,15 @@ const TutorView = () => {
   const [pendingBookings, setPendingBookings] = useState([]);
 
   useEffect(() => {
-    if (!userId || !token) return; // Ensure we have userId and token
+    if (!token) {
+      console.warn("Token is missing");
+      return;
+    }
 
     const fetchPendingBookings = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5001/api/tutors/${userId}/pending-bookings`,
+          "http://localhost:5001/api/tutors/pending-bookings",
           {
             method: "GET",
             headers: {
@@ -71,15 +74,15 @@ const TutorView = () => {
         }
 
         const data = await response.json();
-        console.log("Pending bookings fetched:", data); // Prüfen der API-Antwort
-
-        setPendingBookings(data); // Setze die erhaltenen Daten im Zustand
+        console.log("Fetched pending bookings:", data);
+        setPendingBookings(data);
       } catch (error) {
-        console.error("Error fetching pending bookings:", error);
+        console.error("Error fetching pending bookings:", error.message);
       }
     };
+
     fetchPendingBookings();
-  }, [userId, token]); // Dependencies: fetch whenever userId or token changes
+  }, [token]);
 
   // Fetch courses or other related data (if needed)
   useEffect(() => {
@@ -305,12 +308,14 @@ const TutorView = () => {
                 </div>
                 <Badge
                   bg={
-                    booking.bookingStatus === "Pending" ? "warning" : "success"
+                    booking.bookingStatus === "requested"
+                      ? "warning"
+                      : "success"
                   }
                 >
                   {booking.bookingStatus}
                 </Badge>
-                {booking.bookingStatus === "Pending" && (
+                {booking.bookingStatus === "requested" && (
                   <>
                     <Button
                       variant="success"
