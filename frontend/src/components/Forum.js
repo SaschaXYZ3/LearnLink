@@ -63,9 +63,41 @@ function Forum() {
         // Call both fetch functions
         fetchPosts();
         fetchUserData();
+        fetchInteractions();
 
         // Dependency array is empty because this effect runs once on component mount
     }, []);
+
+    const fetchInteractions = async () => {
+        try {
+            const response = await fetch("http://localhost:5001/forum/interactions", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch interactions");
+            }
+
+            const interactions = await response.json();
+
+            // Update the posts with user interactions
+            setPosts((prevPosts) =>
+                prevPosts.map((post) => ({
+                    ...post,
+                    userLiked: interactions.some(
+                        (interaction) => interaction.post_id === post.id && interaction.liked
+                    ),
+                    userReported: interactions.some(
+                        (interaction) => interaction.post_id === post.id && interaction.reported
+                    ),
+                }))
+            );
+        } catch (error) {
+            console.error("Fehler beim Abrufen der Interaktionen:", error);
+        }
+    };
 
     // Beitrag hinzufügen
     const handleAddPost = async (event) => {
@@ -98,20 +130,61 @@ function Forum() {
     // Beitrag liken
     const handleLikePost = async (id) => {
         try {
-            await fetch(`http://localhost:5001/forum/like/${id}`, { method: "POST" });
-            setPosts(posts.map(post => post.id === id ? { ...post, likes: post.likes + 1 } : post));
+            const response = await fetch(`http://localhost:5001/forum/like/${id}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Fehler beim Liken des Beitrags.");
+            }
+
+            const updatedPost = await response.json();
+
+            // Update the specific post with the like status
+            setPosts(posts.map(post =>
+                post.id === id
+                    ? { ...post, likes: updatedPost.likes || post.likes + 1, userLiked: true }
+                    : post
+            ));
         } catch (error) {
             console.error("Fehler beim Liken des Beitrags:", error);
         }
     };
 
     // Beitrag melden
+    // Beitrag melden
     const handleReportPost = async (id) => {
         try {
-            await fetch(`http://localhost:5001/forum/report/${id}`, { method: "POST" });
+            const response = await fetch(`http://localhost:5001/forum/report/${id}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || "Fehler beim Melden des Beitrags.");
+            }
+
+            const updatedPost = await response.json();
+
+            // Update the specific post with the reported status (normalize to boolean)
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post.id === id ? { ...post, userReported: updatedPost.reported === 1 } : post
+                )
+            );
+
             alert("Beitrag gemeldet.");
         } catch (error) {
             console.error("Fehler beim Melden des Beitrags:", error);
+            alert(error.message || "Fehler beim Melden des Beitrags.");
         }
     };
 
@@ -129,7 +202,7 @@ function Forum() {
 
     // Kommentar hinzufügen
     const handleAddComment = async (event) => {
-        event.preventDefault(); // Verhindert Neuladen der Seite
+        event.preventDefault(); // Prevent page reload
         if (!newComment.trim()) return alert("Bitte einen Kommentar eingeben.");
 
         try {
@@ -139,17 +212,33 @@ function Forum() {
                 body: JSON.stringify({
                     postId: selectedPost.id,
                     comment: newComment,
-                    username: userName
+                    username: userName,
                 }),
             });
 
             if (response.ok) {
-                const newCommentData = await response.json();
-                setSelectedPost((prevPost) => ({
-                    ...prevPost,
-                    comments: [...prevPost.comments, newCommentData]
-                }));
-                setNewComment("");
+                // Fetch updated comments from the backend
+                const commentsResponse = await fetch(`http://localhost:5001/forum/comments/${selectedPost.id}`);
+                const updatedComments = await commentsResponse.json();
+
+                // Update selectedPost with the updated comments
+                const updatedSelectedPost = {
+                    ...selectedPost,
+                    comments: updatedComments,
+                };
+
+                setSelectedPost(updatedSelectedPost);
+
+                // Update the specific post in the posts array
+                setPosts((prevPosts) =>
+                    prevPosts.map((post) =>
+                        post.id === selectedPost.id
+                            ? { ...post, comments: updatedComments }
+                            : post
+                    )
+                );
+
+                setNewComment(""); // Reset the input field
             } else {
                 alert("Fehler beim Hinzufügen des Kommentars.");
             }
@@ -157,7 +246,6 @@ function Forum() {
             console.error("Fehler beim Hinzufügen des Kommentars:", error);
         }
     };
-
 
     return (
         <Container className="mt-5">
@@ -201,13 +289,23 @@ function Forum() {
                         <Card.Text>{post.content}</Card.Text>
                         <p><strong>Erstellt von:</strong> {post.username}</p>
                         <div className="d-flex justify-content-between align-items-center">
-                            <Badge pill bg="primary">{post.likes} Likes</Badge>
+                            <Badge pill bg="primary">
+                                {post.likes !== undefined ? `${post.likes} Likes` : "0 Likes"}
+                            </Badge>
                             <div className="d-flex gap-2">
-                                <Button variant="outline-danger" onClick={() => handleLikePost(post.id)}>
-                                    <FontAwesomeIcon icon={faHeart} />
+                                <Button
+                                    variant="outline-danger"
+                                    onClick={() => handleLikePost(post.id)}
+                                    disabled={post.userLiked}
+                                >
+                                    <FontAwesomeIcon icon={faHeart} /> {post.userLiked ? "Liked" : "Like"}
                                 </Button>
-                                <Button variant="outline-warning" onClick={() => handleReportPost(post.id)}>
-                                    <FontAwesomeIcon icon={faFlag} />
+                                <Button
+                                    variant="outline-warning"
+                                    onClick={() => handleReportPost(post.id)}
+                                    disabled={post.userReported}
+                                >
+                                    <FontAwesomeIcon icon={faFlag} /> {post.userReported ? "Reported" : "Report"}
                                 </Button>
                             </div>
                         </div>
