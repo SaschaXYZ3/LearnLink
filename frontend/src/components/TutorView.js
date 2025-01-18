@@ -21,6 +21,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/TutorView.css";
 import jwt_decode from "jwt-decode";
+import { Categories, SubCategories, SortOptions } from "../data/categories";
 
 const TutorView = () => {
   //const { userId } = useContext(UserContext); // Access userId from context
@@ -235,7 +236,15 @@ const TutorView = () => {
   }, [selectedCourse?.id]); // Setze hier nur selectedCourse.id als Abhängigkeit, damit die Teilnehmer nur einmal geladen werden
   // Achte darauf, dass selectedCourse nicht direkt in die Dependency-Liste gehört, sondern den richtigen Wert enthält
 */
-  const categories = {
+  const categories = Categories.reduce((acc, category) => {
+    const subcategories = SubCategories.filter(
+      (sub) => sub.category === category.value
+    ).map((sub) => sub.label);
+
+    acc[category.label] = subcategories;
+    return acc;
+  }, {});
+  /*{
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
     "IT Security": [
@@ -244,7 +253,7 @@ const TutorView = () => {
       "Ethical Hacking",
     ],
     Mathematics: ["Algebra", "Calculus", "Linear Algebra"],
-  };
+  };*/
 
   const handleInputChange = (e) => {
     setNewCourse({ ...newCourse, [e.target.name]: e.target.value });
