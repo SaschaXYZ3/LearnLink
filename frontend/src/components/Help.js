@@ -35,7 +35,6 @@ const Help = () => {
               </p>
 
               {/* New content: First Steps */}
-              {/* New content: First Steps */}
           <h3 className="mt-5 mb-4">Your First Steps on Learnlink</h3>
 
           <h4 className="mb-3">For Students</h4>
@@ -306,6 +305,33 @@ const Help = () => {
                 </div>
               </div>
             </div>
+
+            <div className="accordion-item">
+              <h2 className="accordion-header">
+                <button
+                  className="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#question9"
+                  aria-expanded="false"
+                  aria-controls="question9"
+                >
+                 What can I do if my topic is not listed under the main categories or subcategories?
+                </button>
+              </h2>
+              <div
+                id="question9"
+                className="accordion-collapse collapse"
+                data-bs-parent="#accordionExample"
+              >
+                <div className="accordion-body">
+                  <p>No worries, this is intentionally limited to <strong>pre-sets</strong>! Use <Link to="/" style={{ textDecoration: "none", color: "blue" }}
+                > contact.</Link>{" "}  form to request new ones.
+                  </p>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <p className="mt-5 fs-5">
