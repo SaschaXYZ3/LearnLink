@@ -1,0 +1,140 @@
+/* AnalyticsPage.css */
+
+/* Container for the entire page */
+.analytics-page-container {
+    display: flex;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+  }
+  
+  /* Sidebar Styles */
+  .analytics-sidebar {
+    width: 240px;
+    background-color: #e3eeea;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #bec5c1;
+  }
+  
+  .analytics-sidebar h5 {
+    font-size: 1.25rem;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .analytics-sidebar .nav-link {
+    color: #555;
+    padding: 10px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  
+  .analytics-sidebar .nav-link:hover {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .analytics-sidebar .nav-link.active {
+    background-color: #93c8ca;
+    color: #fff;
+  }
+  
+  /* Main Content Styles */
+  .analytics-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header Styles */
+  .analytics-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .analytics-header .navbar-brand {
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .analytics-header .btn {
+    color: #007bff;
+    background-color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+  
+  .analytics-header .btn:hover {
+    background-color: #f5f7fa;
+  }
+  
+  /* Main Content Area */
+  .analytics-main {
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .analytics-main h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  /* Table Styles */
+  .table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table th,
+  .table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    color: #555;
+  }
+  
+  .table th {
+    background-color: #e3eeea;
+    font-weight: bold;
+  }
+  
+  .table tr:hover {
+    background-color: #f1f8f7;
+  }
+  
+  /* Loading Spinner */
+  .spinner-border {
+    color: #007bff;
+    display: block;
+    margin: 20px auto;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .analytics-sidebar {
+      width: 200px;
+    }
+  
+    .analytics-header .btn {
+      padding: 4px 8px;
+    }
+  }
