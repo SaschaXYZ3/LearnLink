@@ -8,7 +8,6 @@
 body {
     font-family: "Arial", sans-serif;
     color: #2C2C2C;
-    background-color: #FDFDFD;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -167,16 +166,7 @@ form button {
 
     .btn-primary {
         width: 100%;
-    }
-}/* General Styling für die gesamte Seite */
-body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Arial", sans-serif;
-    color: #2C2C2C;
-    background-color: #FDFDFD;
-    line-height: 1.6;
+    }     
 }
 
 /* Container für den gesamten Catalog-Bereich */

@@ -44,6 +44,7 @@ const TutorView = () => {
     date: "",
     time: new Date(),
     meetingLink: "",
+    description: "",
   });
 
   const [userId, setUserId] = useState(null); // Store user ID
@@ -93,7 +94,7 @@ const TutorView = () => {
     if (!token) {
       console.warn("Token is missing");
       return;
-    }
+    } 
 
     const fetchPendingBookings = async () => {
       try {
@@ -265,6 +266,7 @@ const TutorView = () => {
       date: "",
       time: new Date(),
       meetingLink: "",
+      description: ""
     });
   };
 
@@ -436,6 +438,8 @@ const TutorView = () => {
                   <strong>Occupied seats: </strong>
                   {course.participants ? course.participants.length : 0}
                   {/* Fallback, falls kein Wert vorhanden */}
+
+                  
                 </Card.Text>
                 <Button
                   variant="danger"
@@ -692,6 +696,20 @@ const TutorView = () => {
               />
             </Form.Group>
 
+              {/* Description */}
+              <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                name="description"
+                min="1"
+                max="5000"
+                value={newCourse.description}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
             {/* Submit Button */}
             <Button
               variant="success"
@@ -704,7 +722,8 @@ const TutorView = () => {
                 !newCourse.date ||
                 !newCourse.time ||
                 !newCourse.maxStudents ||
-                !newCourse.meetingLink
+                !newCourse.meetingLink ||
+                !newCourse.description
               }
             >
               Add Course

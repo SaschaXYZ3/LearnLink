@@ -235,7 +235,7 @@ function StudentView() {
                         <option value="Booked">Open</option>
                         <option value="Completed">Completed</option>
                     </select>
-                </div>
+                </div> 
 
                 {/* View Toggle Button */}
                 <div className="view-toggle mb-3">

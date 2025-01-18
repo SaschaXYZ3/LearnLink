@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Categories, SubCategories, SortOptions } from "../data/categories"; // Importiere die Daten
 
 import {
@@ -11,14 +10,18 @@ import {
   Tooltip,
   OverlayTrigger,
   Form,
+  Modal,
 } from "react-bootstrap";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
   faHeart as faSolidHeart,
   faStar,
   faList,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
+
 import { faHeart as faRegularHeart } from "@fortawesome/free-regular-svg-icons";
 
 import "../css/BrowseCatalog.css";
@@ -33,6 +36,8 @@ function BrowseCatalog() {
   const [isLoading, setIsLoading] = useState(true); // Ladeszustand hinzufügen
   const [error, setError] = useState(null); // Fehlerbehandlung hinzufügen
   const [showFavorites, setShowFavorites] = useState(false); // State für favoriten
+  const [showModal, setShowModal] = useState(false); // Modal anzeigen
+  const [selectedCourse, setSelectedCourse] = useState(null); // Ausgewählter Post für das Modal
 
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
@@ -53,7 +58,6 @@ function BrowseCatalog() {
         const data = await response.json();
         setCourses(data);
         setIsLoading(false);
-
       } catch (err) {
         console.error("Error fetching courses: ", err);
         setError("Fehler beim Laden der Kursdaten.");
@@ -63,20 +67,29 @@ function BrowseCatalog() {
     fetchCourses();
   }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
 
-
   // Dynamically filter subcategories based on selected category
   const availableSubCategories = filterCategory
     ? SubCategories.filter((sub) => sub.category === filterCategory)
     : SubCategories;
 
-
   // Filter logic for courses
   const filteredCourses = courses.filter((course) => {
-    const matchesSearchTerm = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory ? course.category === filterCategory : true;
-    const matchesSubCategory = filterSubCategory ? course.subcategory === filterSubCategory : true;
+    const matchesSearchTerm = course.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory
+      ? course.category === filterCategory
+      : true;
+    const matchesSubCategory = filterSubCategory
+      ? course.subcategory === filterSubCategory
+      : true;
     const matchesFavorites = showFavorites ? course.isFavorite : true;
-    return matchesSearchTerm && matchesCategory && matchesSubCategory && matchesFavorites;
+    return (
+      matchesSearchTerm &&
+      matchesCategory &&
+      matchesSubCategory &&
+      matchesFavorites
+    );
   });
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -153,12 +166,23 @@ function BrowseCatalog() {
     }
   };
 
+  //show modal
+  const handleShowModal = (course) => {
+    setSelectedCourse(course);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCourse(null);
+    setShowModal(false);
+  };
+
   return (
     <Container className="browse-catalog-page mt-5">
       <Form className="d-flex justify-content-between align-items-center mb-4">
         <Form.Control
           type="text"
-          placeholder="Suche nach Kursen..."
+          placeholder="Search for courses ... "
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-50"
@@ -170,12 +194,14 @@ function BrowseCatalog() {
           <FontAwesomeIcon icon={viewType === "grid" ? faList : faThLarge} />
         </Button>
 
-
         {/* Category Select */}
-        <Form.Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="mb-3">
-
+        <Form.Select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="mb-3"
+        >
           {/* Default Anzeige ALLE KATEGORIEN*/}
-          <option value="">All Categories</option>
+          <option value="">All categories</option>
 
           {Categories.map((category) => (
             <option key={category.value} value={category.value}>
@@ -185,11 +211,13 @@ function BrowseCatalog() {
         </Form.Select>
 
         {/* Subcategory Select */}
-        <Form.Select value={filterSubCategory} onChange={(e) => setFilterSubCategory(e.target.value)} disbled={!filterCategory}>
-         
+        <Form.Select
+          value={filterSubCategory}
+          onChange={(e) => setFilterSubCategory(e.target.value)}
+          disbled={!filterCategory}
+        >
           {/* Default Anzeige ALLE KATEGORIEN*/}
-          <option value="">Alle Kategorien</option>
-
+          <option value="">All subcategories</option>
 
           {availableSubCategories.map((subcategory) => (
             <option key={subcategory.value} value={subcategory.value}>
@@ -198,7 +226,10 @@ function BrowseCatalog() {
           ))}
         </Form.Select>
 
-        <Form.Select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+        <Form.Select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+        >
           {SortOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -208,12 +239,15 @@ function BrowseCatalog() {
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""
-          }`}
+        className={`filter-favorites mb-3 ${
+          showFavorites ? "favorite-active" : ""
+        }`}
         onClick={() => setShowFavorites(!showFavorites)}
       >
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
-        <span className="ms-2">Nur Favoriten anzeigen</span>
+        <span className="ms-2 mt-3 mb-3">
+          <strong>Show only favorites</strong>
+        </span>
       </div>
 
       {isLoading ? (
@@ -239,10 +273,51 @@ function BrowseCatalog() {
                 <Card.Text>
                   <strong>Category:</strong> {course.category} <br />
                   <strong>Subcategory:</strong> {course.subcategory} <br />
-                  <strong>Tutor Rating:</strong> {course.averageRating?.toFixed(1)}{" "}
+                  <strong>Tutor Rating:</strong>{" "}
+                  {course.averageRating?.toFixed(1)} <br />
+                  <br />
                   <FontAwesomeIcon icon={faStar} style={{ color: "#FFD700" }} />
-                  ({course.course_reviews?.length || 0} Bewertungen)
+                  ({course.course_reviews?.length || 0} Ratings)
                 </Card.Text>
+
+                {/* Button for description */}
+                <div>
+                  <Button
+                    className="mb-4"
+                    onClick={() => handleShowModal(course)} // Übergibt das 'course' Objekt an die Funktion
+                  >
+                    Show more
+                  </Button>
+                </div>
+
+                {/* Modal für Kursbeschreibung */}
+                <Modal show={showModal} onHide={handleCloseModal}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>{selectedCourse?.title}</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <p>
+                      <strong>Category:</strong> {selectedCourse?.category}
+                    </p>
+                    <p>
+                      <strong>Subcategory</strong> {selectedCourse?.subcategory}
+                    </p>
+                    <p>
+                      <strong>Rating:</strong>{" "}
+                      {selectedCourse?.averageRating?.toFixed(1)}
+                    </p>
+                    <p>
+                      <strong>Description:</strong>{" "}
+                      {selectedCourse?.description ||
+                        "No description available."}
+                    </p>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
 
                 <ProgressBar
                   now={(() => {
@@ -251,8 +326,9 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
-                    } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${
+                    course.maxStudents > 0 ? course.maxStudents : 1
+                  } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"
