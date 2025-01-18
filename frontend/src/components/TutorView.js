@@ -124,6 +124,49 @@ const TutorView = () => {
     fetchPendingBookings();
   }, [token]);
 
+  //GET maxStudents and actualStudents from Backend for occupied seats
+  const [courseAvailability, setCourseAvailability] = useState(null);
+
+  useEffect(() => {
+    if (!selectedCourse?.id) return; // Verhindern, dass die Funktion ausgeführt wird, wenn kein Kurs ausgewählt ist
+
+    const fetchCourseAvailability = async () => {
+      const courseId = selectedCourse.id; // Hole die courseId vom ausgewählten Kurs
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/courses/${courseId}/students`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch course availability");
+        }
+
+        const data = await response.json(); // Erwartet: maxStudents und actualStudents
+        console.log(`Fetched availability for course ${courseId}:`, data);
+
+        setCourseAvailability(data);
+      } catch (error) {
+        console.error(
+          `Error fetching availability for course ${courseId}:`,
+          error.message
+        );
+      }
+    };
+
+    fetchCourseAvailability();
+  }, [selectedCourse?.id, token]);
+
+  const handleCourseSelection = (course) => {
+    setSelectedCourse(course); // Setzt den ausgewählten Kurs
+  };
+
   // Fetch courses or other related data (if needed)
   useEffect(() => {
     const fetchCourses = async () => {
@@ -185,49 +228,6 @@ const TutorView = () => {
     };
     fetchParticipantsForSelectedCourse();
   }, [selectedCourse?.id]); // Läuft nur, wenn `selectedCourse.id` sich ändert
-
-  //GET maxStudents and actualStudents from Backend for occupied seats
-  const [courseAvailability, setCourseAvailability] = useState(null);
-
-  useEffect(() => {
-    if (!selectedCourse?.id) return; // Verhindern, dass die Funktion ausgeführt wird, wenn kein Kurs ausgewählt ist
-
-    const fetchCourseAvailability = async () => {
-      const courseId = selectedCourse.id; // Hole die courseId vom ausgewählten Kurs
-      try {
-        const response = await fetch(
-          `http://localhost:5001/api/courses/${courseId}/students`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch course availability");
-        }
-
-        const data = await response.json(); // Erwartet: maxStudents und actualStudents
-        console.log(`Fetched availability for course ${courseId}:`, data);
-
-        setCourseAvailability(data);
-      } catch (error) {
-        console.error(
-          `Error fetching availability for course ${courseId}:`,
-          error.message
-        );
-      }
-    };
-
-    fetchCourseAvailability();
-  }, [selectedCourse?.id, token]);
-
-  const handleCourseSelection = (course) => {
-    setSelectedCourse(course); // Setzt den ausgewählten Kurs
-  };
 
   /* if (selectedCourse?.id) {
       fetchParticipants();
@@ -473,9 +473,7 @@ const TutorView = () => {
                   <strong>Max Students:</strong> {course.maxStudents || "N/A"}
                   <br />
                   <strong>Occupied seats: </strong>
-                  {courses.id === selectedCourse?.id && courseAvailability
-                    ? courseAvailability.actualStudents || 0
-                    : 0}
+                  {course.actualStudents || 0}
                   {/* Fallback, falls kein Wert vorhanden */}
                 </Card.Text>
                 <Button
@@ -517,9 +515,7 @@ const TutorView = () => {
           </p>
           <p>
             <strong>Current Participants:</strong>{" "}
-            {courses.id === selectedCourse?.id && courseAvailability
-              ? courseAvailability.actualStudents || 0
-              : 0}
+            {selectedCourse?.participants?.length || 0}
           </p>
           <hr />
           <h5>Participants</h5>
