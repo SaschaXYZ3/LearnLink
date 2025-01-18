@@ -120,6 +120,46 @@ const TutorView = () => {
     fetchCourses();
   }, [token]);
 
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      if (!selectedCourse?.id) return; // Verhindern, dass wir den API-Call ohne gültige CourseId ausführen
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/enrollments/${selectedCourse.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch participants");
+        }
+
+        const participants = await response.json();
+        console.log("Fetched participants:", participants);
+
+        setSelectedCourse((prev) => ({
+          ...prev,
+          participants, // Setze die Teilnehmer nur einmal, wenn die Teilnehmer abgerufen werden
+        }));
+      } catch (error) {
+        console.error("Error fetching participants:", error.message);
+      }
+    };
+
+    if (selectedCourse?.id) {
+      fetchParticipants();
+    }
+  }, [selectedCourse?.id]); // Setze hier nur selectedCourse.id als Abhängigkeit, damit die Teilnehmer nur einmal geladen werden
+  // Achte darauf, dass selectedCourse nicht direkt in die Dependency-Liste gehört, sondern den richtigen Wert enthält
+
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
@@ -255,10 +295,12 @@ const TutorView = () => {
     }
   };
 
-  const listStudents = async (courseId) => {
+  const fetchStudentList = async (courseId) => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(
-        `http://localhost:5001/api/courses/${courseId}/users`,
+        `http://localhost:5001/api/enrollments/${courseId}`,
         {
           method: "GET",
           headers: {
@@ -267,9 +309,16 @@ const TutorView = () => {
           },
         }
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch student list");
+      }
+
+      const studentList = await response.json();
+      console.log("Student list fetched:", studentList);
+      return studentList;
     } catch (error) {
-      console.error("Failed to read users from course:", error);
-      alert("Failed to read users from course. Please try again later.");
+      console.error("Error fetching student list:", error.message);
     }
   };
 
@@ -313,6 +362,39 @@ const TutorView = () => {
       console.error("Failed to delete course:", error);
       alert("Failed to delete the course. Please try again later.");
     }
+  };
+
+  const handleShowCourseDetails = async (course) => {
+    setSelectedCourse(course);
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/enrollments/${course.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch participants");
+      }
+
+      const participants = await response.json();
+      setSelectedCourse((prev) => ({
+        ...prev,
+        participants,
+      }));
+    } catch (error) {
+      console.error("Error fetching participants:", error.message);
+    }
+
+    setShowModal(true);
   };
 
   return (
@@ -397,7 +479,7 @@ const TutorView = () => {
             {selectedCourse?.participants?.length > 0 ? (
               selectedCourse.participants.map((participant, index) => (
                 <ListGroup.Item key={index}>
-                  {participant.name} ({participant.email})
+                  {participant.studentName} ({participant.studentEmail})
                 </ListGroup.Item>
               ))
             ) : (
@@ -405,12 +487,12 @@ const TutorView = () => {
             )}
           </ListGroup>
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
         </Modal.Footer>
-              
       </Modal>
 
       {/* Pending Bookings Section */}
