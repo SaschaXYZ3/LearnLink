@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Categories, SubCategories, SortOptions } from "../data/categories"; // Importiere die Daten
 
 import {
   Container,
@@ -27,6 +28,7 @@ function BrowseCatalog() {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewType, setViewType] = useState("grid");
   const [filterCategory, setFilterCategory] = useState("");
+  const [filterSubCategory, setFilterSubCategory] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Ladeszustand hinzufügen
   const [error, setError] = useState(null); // Fehlerbehandlung hinzufügen
@@ -41,15 +43,17 @@ function BrowseCatalog() {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:5001/api/courses");
+        const response = await fetch("http://localhost:5001/api/courses");
         /*headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        */
-        setCourses(response.data); // Kurse setzen
+     Authorization: `Bearer ${localStorage.getItem("token")}`,
+     "Content-Type": "application/json",
+   },
+ });
+ */
+        const data = await response.json();
+        setCourses(data);
         setIsLoading(false);
+
       } catch (err) {
         console.error("Error fetching courses: ", err);
         setError("Fehler beim Laden der Kursdaten.");
@@ -59,15 +63,20 @@ function BrowseCatalog() {
     fetchCourses();
   }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
 
+
+  // Dynamically filter subcategories based on selected category
+  const availableSubCategories = filterCategory
+    ? SubCategories.filter((sub) => sub.category === filterCategory)
+    : SubCategories;
+
+
+  // Filter logic for courses
   const filteredCourses = courses.filter((course) => {
-    const matchesSearchTerm = course.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory
-      ? course.category === filterCategory
-      : true;
+    const matchesSearchTerm = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory ? course.category === filterCategory : true;
+    const matchesSubCategory = filterSubCategory ? course.subcategory === filterSubCategory : true;
     const matchesFavorites = showFavorites ? course.isFavorite : true;
-    return matchesSearchTerm && matchesCategory && matchesFavorites;
+    return matchesSearchTerm && matchesCategory && matchesSubCategory && matchesFavorites;
   });
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -160,31 +169,47 @@ function BrowseCatalog() {
         >
           <FontAwesomeIcon icon={viewType === "grid" ? faList : faThLarge} />
         </Button>
-        <Form.Select
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="">Alle Kategorien</option>
-          <option value="Coding">Coding</option>
-          <option value="IT Security">IT Security</option>
-          <option value="Mathematics">Mathematics</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Network Technologies">Network Technologies</option>
+
+
+        {/* Category Select */}
+        <Form.Select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="mb-3">
+
+          {/* Default Anzeige ALLE KATEGORIEN*/}
+          <option value="">All Categories</option>
+
+          {Categories.map((category) => (
+            <option key={category.value} value={category.value}>
+              {category.label}
+            </option>
+          ))}
         </Form.Select>
-        <Form.Select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-        >
-          <option value="">Sortieren nach</option>
-          <option value="rating">Bewertung</option>
-          <option value="title">Titel</option>
+
+        {/* Subcategory Select */}
+        <Form.Select value={filterSubCategory} onChange={(e) => setFilterSubCategory(e.target.value)} disbled={!filterCategory}>
+         
+          {/* Default Anzeige ALLE KATEGORIEN*/}
+          <option value="">Alle Kategorien</option>
+
+
+          {availableSubCategories.map((subcategory) => (
+            <option key={subcategory.value} value={subcategory.value}>
+              {subcategory.label}
+            </option>
+          ))}
+        </Form.Select>
+
+        <Form.Select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+          {SortOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </Form.Select>
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${
-          showFavorites ? "favorite-active" : ""
-        }`}
+        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""
+          }`}
         onClick={() => setShowFavorites(!showFavorites)}
       >
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
@@ -212,8 +237,9 @@ function BrowseCatalog() {
               <Card.Body>
                 <Card.Title>{course.title}</Card.Title>
                 <Card.Text>
-                  <strong>Kategorie:</strong> {course.category} <br />
-                  <strong>Bewertung:</strong> {course.averageRating?.toFixed(1)}{" "}
+                  <strong>Category:</strong> {course.category} <br />
+                  <strong>Subcategory:</strong> {course.subcategory} <br />
+                  <strong>Tutor Rating:</strong> {course.averageRating?.toFixed(1)}{" "}
                   <FontAwesomeIcon icon={faStar} style={{ color: "#FFD700" }} />
                   ({course.course_reviews?.length || 0} Bewertungen)
                 </Card.Text>
@@ -225,9 +251,8 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${
-                    course.maxStudents > 0 ? course.maxStudents : 1
-                  } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
+                    } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"

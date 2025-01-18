@@ -55,9 +55,38 @@ const TutorView = () => {
   const [showModal, setShowModal] = useState(false);
 
   // Funktion zum Öffnen des Modals und Setzen des ausgewählten Kurses
-  const handleShowModal = (course) => {
-    setSelectedCourse(course);
-    setShowModal(true);
+  const handleShowModal = async (course) => {
+    setShowModal(true); // Zeige das Modal an
+  
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/enrollments/${course.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${(token)}`,
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch participants");
+      }
+  
+      const participants = await response.json();
+  
+      // Aktualisiere die Teilnehmerdaten direkt im Kursarray
+      setCourses((prevCourses) =>
+        prevCourses.map((c) =>
+          c.id === course.id ? { ...c, participants } : c
+        )
+      );
+  
+      setSelectedCourse({ ...course, participants }); // Setze den ausgewählten Kurs
+    } catch (error) {
+      console.error("Error fetching participants:", error.message);
+    }
   };
 
   useEffect(() => {
@@ -120,6 +149,49 @@ const TutorView = () => {
     fetchCourses();
   }, [token]);
 
+  useEffect(() => {
+    const fetchParticipantsForSelectedCourse = async () => {
+      if (!selectedCourse?.id) return; // Verhindern, dass wir den API-Call ohne gültige CourseId ausführen
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/enrollments/${selectedCourse.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch participants");
+        }
+
+        const participants = await response.json();
+        console.log("Fetched participants:", participants);
+
+        setSelectedCourse((prev) => ({
+          ...prev,
+          participants, // Setze die Teilnehmer nur einmal, wenn die Teilnehmer abgerufen werden
+        }));
+      } catch (error) {
+        console.error("Error fetching participants:", error.message);
+      }
+    };
+    fetchParticipantsForSelectedCourse();
+  }, [selectedCourse?.id]); // Läuft nur, wenn `selectedCourse.id` sich ändert
+
+
+   /* if (selectedCourse?.id) {
+      fetchParticipants();
+    }
+  }, [selectedCourse?.id]); // Setze hier nur selectedCourse.id als Abhängigkeit, damit die Teilnehmer nur einmal geladen werden
+  // Achte darauf, dass selectedCourse nicht direkt in die Dependency-Liste gehört, sondern den richtigen Wert enthält
+*/
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
@@ -255,29 +327,6 @@ const TutorView = () => {
     }
   };
 
-  const listStudents = async (courseId) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5001/api/courses/${courseId}/users`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Failed to read users from course:", error);
-      alert("Failed to read users from course. Please try again later.");
-    }
-  };
-
-  const moveToPending = (index) => {
-    const updatedBookings = [...bookings];
-    updatedBookings[index].status = "Pending";
-    setBookings(updatedBookings);
-  };
 
   const removeBooking = (index) => {
     const updatedBookings = bookings.filter((_, i) => i !== index);
@@ -315,6 +364,46 @@ const TutorView = () => {
     }
   };
 
+  // Funktion zum Zurücksetzen des Modals
+  const resetModal = () => {
+    setSelectedCourse(null); // Setze den Kurs zurück
+  };
+
+
+  const handleShowCourseDetails = async (course) => {
+    setSelectedCourse({ ...course, participants: [] }); // Initialisiere mit leeren Teilnehmern
+    setShowModal(true); // Zeige das Modal an
+
+    const token = localStorage.getItem("token");
+
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/enrollments/${course.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch participants");
+      }
+
+      const participants = await response.json();
+      setSelectedCourse((prev) => ({
+        ...prev,
+        participants,
+      }));
+    } catch (error) {
+      console.error("Error fetching participants:", error.message);
+    }
+
+  };
+
   return (
     <div className="tutor-page">
       {/* Dashboard Header */}
@@ -345,7 +434,7 @@ const TutorView = () => {
                   <strong>Max Students:</strong> {course.maxStudents || "N/A"}
                   <br />
                   <strong>Occupied seats: </strong>
-                  {"Placeholder"}
+                  {course.participants ? course.participants.length : 0}
                   {/* Fallback, falls kein Wert vorhanden */}
                 </Card.Text>
                 <Button
@@ -360,7 +449,7 @@ const TutorView = () => {
                   size="sm"
                   onClick={() => handleShowModal(course)}
                 >
-                  <FontAwesomeIcon icon={faAddressCard} /> Students
+                  <FontAwesomeIcon icon={faAddressCard} /> Show Details
                 </Button>
               </Card.Body>
             </Card>
@@ -397,7 +486,7 @@ const TutorView = () => {
             {selectedCourse?.participants?.length > 0 ? (
               selectedCourse.participants.map((participant, index) => (
                 <ListGroup.Item key={index}>
-                  {participant.name} ({participant.email})
+                  {participant.studentName} ({participant.studentEmail})
                 </ListGroup.Item>
               ))
             ) : (
@@ -405,12 +494,12 @@ const TutorView = () => {
             )}
           </ListGroup>
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
         </Modal.Footer>
-              
       </Modal>
 
       {/* Pending Bookings Section */}
