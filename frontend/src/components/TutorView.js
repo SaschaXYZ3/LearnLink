@@ -55,9 +55,38 @@ const TutorView = () => {
   const [showModal, setShowModal] = useState(false);
 
   // Funktion zum Öffnen des Modals und Setzen des ausgewählten Kurses
-  const handleShowModal = (course) => {
-    setSelectedCourse(course);
-    setShowModal(true);
+  const handleShowModal = async (course) => {
+    setShowModal(true); // Zeige das Modal an
+  
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/enrollments/${course.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${(token)}`,
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch participants");
+      }
+  
+      const participants = await response.json();
+  
+      // Aktualisiere die Teilnehmerdaten direkt im Kursarray
+      setCourses((prevCourses) =>
+        prevCourses.map((c) =>
+          c.id === course.id ? { ...c, participants } : c
+        )
+      );
+  
+      setSelectedCourse({ ...course, participants }); // Setze den ausgewählten Kurs
+    } catch (error) {
+      console.error("Error fetching participants:", error.message);
+    }
   };
 
   useEffect(() => {
@@ -121,7 +150,7 @@ const TutorView = () => {
   }, [token]);
 
   useEffect(() => {
-    const fetchParticipants = async () => {
+    const fetchParticipantsForSelectedCourse = async () => {
       if (!selectedCourse?.id) return; // Verhindern, dass wir den API-Call ohne gültige CourseId ausführen
 
       const token = localStorage.getItem("token");
@@ -153,13 +182,16 @@ const TutorView = () => {
         console.error("Error fetching participants:", error.message);
       }
     };
+    fetchParticipantsForSelectedCourse();
+  }, [selectedCourse?.id]); // Läuft nur, wenn `selectedCourse.id` sich ändert
 
-    if (selectedCourse?.id) {
+
+   /* if (selectedCourse?.id) {
       fetchParticipants();
     }
   }, [selectedCourse?.id]); // Setze hier nur selectedCourse.id als Abhängigkeit, damit die Teilnehmer nur einmal geladen werden
   // Achte darauf, dass selectedCourse nicht direkt in die Dependency-Liste gehört, sondern den richtigen Wert enthält
-
+*/
   const categories = {
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
@@ -295,38 +327,6 @@ const TutorView = () => {
     }
   };
 
-  const fetchStudentList = async (courseId) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch(
-        `http://localhost:5001/api/enrollments/${courseId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch student list");
-      }
-
-      const studentList = await response.json();
-      console.log("Student list fetched:", studentList);
-      return studentList;
-    } catch (error) {
-      console.error("Error fetching student list:", error.message);
-    }
-  };
-
-  const moveToPending = (index) => {
-    const updatedBookings = [...bookings];
-    updatedBookings[index].status = "Pending";
-    setBookings(updatedBookings);
-  };
 
   const removeBooking = (index) => {
     const updatedBookings = bookings.filter((_, i) => i !== index);
@@ -364,10 +364,18 @@ const TutorView = () => {
     }
   };
 
+  // Funktion zum Zurücksetzen des Modals
+  const resetModal = () => {
+    setSelectedCourse(null); // Setze den Kurs zurück
+  };
+
+
   const handleShowCourseDetails = async (course) => {
-    setSelectedCourse(course);
+    setSelectedCourse({ ...course, participants: [] }); // Initialisiere mit leeren Teilnehmern
+    setShowModal(true); // Zeige das Modal an
 
     const token = localStorage.getItem("token");
+
 
     try {
       const response = await fetch(
@@ -394,7 +402,6 @@ const TutorView = () => {
       console.error("Error fetching participants:", error.message);
     }
 
-    setShowModal(true);
   };
 
   return (
@@ -427,7 +434,7 @@ const TutorView = () => {
                   <strong>Max Students:</strong> {course.maxStudents || "N/A"}
                   <br />
                   <strong>Occupied seats: </strong>
-                  {"Placeholder"}
+                  {course.participants ? course.participants.length : 0}
                   {/* Fallback, falls kein Wert vorhanden */}
                 </Card.Text>
                 <Button
@@ -442,7 +449,7 @@ const TutorView = () => {
                   size="sm"
                   onClick={() => handleShowModal(course)}
                 >
-                  <FontAwesomeIcon icon={faAddressCard} /> Students
+                  <FontAwesomeIcon icon={faAddressCard} /> Show Details
                 </Button>
               </Card.Body>
             </Card>
