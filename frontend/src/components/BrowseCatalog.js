@@ -368,6 +368,4 @@ function BrowseCatalog() {
   );
 }
 
-
-
 export default BrowseCatalog;
