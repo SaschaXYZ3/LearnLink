@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { Table, Button, Form } from "react-bootstrap";
 
 function AdminPanel() {
-  const [users, setUsers] = useState([]); // Für Benutzer speichern
-  const [loading, setLoading] = useState(true); // Lade-Status
-  const [error, setError] = useState(null); // Fehlerstatus
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [resetPasswordValue, setResetPasswordValue] = useState("");
 
-  // Daten beim Laden der Komponente abrufen
   useEffect(() => {
     const fetchUsers = async () => {
-      const token = localStorage.getItem("token"); // Token aus dem Local Storage (sofern es dort gespeichert ist)
-
+      const token = localStorage.getItem("token");
       if (!token) {
         setError("No token found, please login.");
         setLoading(false);
@@ -26,36 +26,96 @@ function AdminPanel() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched data", data);
-          setUsers(data); // Benutzer in den State speichern
+          setUsers(data);
         } else {
           const errorData = await response.json();
-          console.error("Error fetching users:", errorData);
           setError(errorData.error || "An error occurred while fetching data");
         }
       } catch (error) {
-        console.error("Network error:", error);
         setError("Network error occurred.");
       } finally {
-        setLoading(false); // Lade-Status auf false setzen
+        setLoading(false);
       }
     };
 
-    fetchUsers(); // Funktion zum Abrufen der Benutzer aufrufen
-  }, []); // Leeres Array, um den Effekt nur einmal auszuführen
+    fetchUsers();
+  }, []);
 
-  if (loading) {
-    return <p>Loading...</p>; // Ladeanzeige
-  }
+  const handleDeleteUser = async (userId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:5001/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-  if (error) {
-    return <p>{error}</p>; // Fehleranzeige
-  }
+      if (!response.ok) throw new Error("Failed to delete user");
+
+      setUsers((prev) => prev.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  const handleResetPassword = async (userId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:5001/admin/users/${userId}/reset-password`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newPassword: resetPasswordValue }),
+      });
+
+      if (!response.ok) throw new Error("Failed to reset password");
+      alert("Password reset successfully!");
+    } catch (error) {
+      console.error("Error resetting password:", error);
+    }
+  };
+
+  const handleEditUsername = async (userId, newUsername) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:5001/admin/users/${userId}/edit-username`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newUsername }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update username");
+
+      setUsers((prev) =>
+        prev.map((user) => (user.id === userId ? { ...user, username: newUsername } : user))
+      );
+    } catch (error) {
+      console.error("Error updating username:", error);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
       <h1>Admin Panel</h1>
-      <table>
+      <Form className="mb-3">
+        <Form.Group controlId="resetPassword">
+          <Form.Label>Default Password</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter default password"
+            value={resetPasswordValue}
+            onChange={(e) => setResetPasswordValue(e.target.value)}
+          />
+        </Form.Group>
+      </Form>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>ID</th>
@@ -63,21 +123,38 @@ function AdminPanel() {
             <th>Email</th>
             <th>Role</th>
             <th>Birth Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {users.length === 0 && <tr><td colSpan="5">No users found</td></tr>} {/* Wenn keine Benutzer da sind */}
           {users.map((user) => (
             <tr key={user.id}>
               <td>{user.id}</td>
-              <td>{user.username}</td>
+              <td>
+                <input
+                  type="text"
+                  defaultValue={user.username}
+                  onBlur={(e) => handleEditUsername(user.id, e.target.value)}
+                />
+              </td>
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>{user.birthDate}</td>
+              <td>
+                <Button variant="danger" onClick={() => handleDeleteUser(user.id)}>
+                  Delete
+                </Button>{" "}
+                <Button
+                  variant="primary"
+                  onClick={() => handleResetPassword(user.id)}
+                >
+                  Reset Password
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }

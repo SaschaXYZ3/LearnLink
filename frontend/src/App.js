@@ -17,7 +17,10 @@ import TutorView from "./components/TutorView";
 import Unauthorized from "./components/Unauthorized";
 import PrivateRoute from "./components/PrivateRoute";
 import Help from "./components/Help";
-
+import AnalyticsPage from "./components/AnalyticsPage";
+import ContactEntriesView from "./components/ContactEntriesView";
+import ForumPostsView from "./components/ForumPostsView";
+import ProfileChangesView from "./components/ProfileChangesView";
 
 function App() {
   const contactFormRef = useRef(null);
@@ -84,6 +87,22 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* Analytics Parent Route */}
+        <Route
+          path="/analytics"
+          element={
+            <PrivateRoute role="admin">
+              <AnalyticsPage />
+            </PrivateRoute>
+          }
+        >
+          {/* Nested Routes for Analytics Subpages */}
+          <Route index element={<div>Welcome to Analytics Dashboard</div>} />
+          <Route path="contact-entries" element={<ContactEntriesView />} />
+          <Route path="forum-posts" element={<ForumPostsView />} />
+          <Route path="profile-changes" element={<ProfileChangesView />} />
+        </Route>
 
       </Routes>
     </Router>
