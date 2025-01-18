@@ -58,7 +58,7 @@ const TutorView = () => {
   // Funktion zum Öffnen des Modals und Setzen des ausgewählten Kurses
   const handleShowModal = async (course) => {
     setShowModal(true); // Zeige das Modal an
-  
+
     try {
       const response = await fetch(
         `http://localhost:5001/api/enrollments/${course.id}`,
@@ -66,24 +66,24 @@ const TutorView = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${(token)}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch participants");
       }
-  
+
       const participants = await response.json();
-  
+
       // Aktualisiere die Teilnehmerdaten direkt im Kursarray
       setCourses((prevCourses) =>
         prevCourses.map((c) =>
           c.id === course.id ? { ...c, participants } : c
         )
       );
-  
+
       setSelectedCourse({ ...course, participants }); // Setze den ausgewählten Kurs
     } catch (error) {
       console.error("Error fetching participants:", error.message);
@@ -94,7 +94,7 @@ const TutorView = () => {
     if (!token) {
       console.warn("Token is missing");
       return;
-    } 
+    }
 
     const fetchPendingBookings = async () => {
       try {
@@ -186,8 +186,50 @@ const TutorView = () => {
     fetchParticipantsForSelectedCourse();
   }, [selectedCourse?.id]); // Läuft nur, wenn `selectedCourse.id` sich ändert
 
+  //GET maxStudents and actualStudents from Backend for occupied seats
+  const [courseAvailability, setCourseAvailability] = useState(null);
 
-   /* if (selectedCourse?.id) {
+  useEffect(() => {
+    if (!selectedCourse?.id) return; // Verhindern, dass die Funktion ausgeführt wird, wenn kein Kurs ausgewählt ist
+
+    const fetchCourseAvailability = async () => {
+      const courseId = selectedCourse.id; // Hole die courseId vom ausgewählten Kurs
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/courses/${courseId}/students`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch course availability");
+        }
+
+        const data = await response.json(); // Erwartet: maxStudents und actualStudents
+        console.log(`Fetched availability for course ${courseId}:`, data);
+
+        setCourseAvailability(data);
+      } catch (error) {
+        console.error(
+          `Error fetching availability for course ${courseId}:`,
+          error.message
+        );
+      }
+    };
+
+    fetchCourseAvailability();
+  }, [selectedCourse?.id, token]);
+
+  const handleCourseSelection = (course) => {
+    setSelectedCourse(course); // Setzt den ausgewählten Kurs
+  };
+
+  /* if (selectedCourse?.id) {
       fetchParticipants();
     }
   }, [selectedCourse?.id]); // Setze hier nur selectedCourse.id als Abhängigkeit, damit die Teilnehmer nur einmal geladen werden
@@ -266,7 +308,7 @@ const TutorView = () => {
       date: "",
       time: new Date(),
       meetingLink: "",
-      description: ""
+      description: "",
     });
   };
 
@@ -329,7 +371,6 @@ const TutorView = () => {
     }
   };
 
-
   const removeBooking = (index) => {
     const updatedBookings = bookings.filter((_, i) => i !== index);
     setBookings(updatedBookings);
@@ -371,13 +412,11 @@ const TutorView = () => {
     setSelectedCourse(null); // Setze den Kurs zurück
   };
 
-
   const handleShowCourseDetails = async (course) => {
     setSelectedCourse({ ...course, participants: [] }); // Initialisiere mit leeren Teilnehmern
     setShowModal(true); // Zeige das Modal an
 
     const token = localStorage.getItem("token");
-
 
     try {
       const response = await fetch(
@@ -403,7 +442,6 @@ const TutorView = () => {
     } catch (error) {
       console.error("Error fetching participants:", error.message);
     }
-
   };
 
   return (
@@ -425,8 +463,7 @@ const TutorView = () => {
             <Card
               key={index}
               style={{ width: "20rem" }}
-              className="course-card"
-            >
+              className="course-card">
               <Card.Body>
                 <Card.Title>{course.title}</Card.Title>
                 <Card.Text>
@@ -436,23 +473,21 @@ const TutorView = () => {
                   <strong>Max Students:</strong> {course.maxStudents || "N/A"}
                   <br />
                   <strong>Occupied seats: </strong>
-                  {course.participants ? course.participants.length : 0}
+                  {courses.id === selectedCourse?.id && courseAvailability
+                    ? courseAvailability.actualStudents || 0
+                    : 0}
                   {/* Fallback, falls kein Wert vorhanden */}
-
-                  
                 </Card.Text>
                 <Button
                   variant="danger"
                   size="sm"
-                  onClick={() => deleteCourse(course.id)}
-                >
+                  onClick={() => deleteCourse(course.id)}>
                   <FontAwesomeIcon icon={faTrash} /> Delete
                 </Button>
                 <Button
                   variant="warning"
                   size="sm"
-                  onClick={() => handleShowModal(course)}
-                >
+                  onClick={() => handleShowModal(course)}>
                   <FontAwesomeIcon icon={faAddressCard} /> Show Details
                 </Button>
               </Card.Body>
@@ -482,7 +517,9 @@ const TutorView = () => {
           </p>
           <p>
             <strong>Current Participants:</strong>{" "}
-            {selectedCourse?.participants?.length || 0}
+            {courses.id === selectedCourse?.id && courseAvailability
+              ? courseAvailability.actualStudents || 0
+              : 0}
           </p>
           <hr />
           <h5>Participants</h5>
@@ -516,8 +553,7 @@ const TutorView = () => {
             pendingBookings.map((booking) => (
               <ListGroup.Item
                 key={booking.enrollmentId}
-                className="d-flex justify-content-between align-items-center"
-              >
+                className="d-flex justify-content-between align-items-center">
                 <div>
                   <strong>{booking.studentName}</strong> requested to join{" "}
                   <em>{booking.courseName}</em>
@@ -527,8 +563,7 @@ const TutorView = () => {
                     booking.bookingStatus === "requested"
                       ? "warning"
                       : "success"
-                  }
-                >
+                  }>
                   {booking.bookingStatus}
                 </Badge>
                 {booking.bookingStatus === "requested" && (
@@ -536,15 +571,13 @@ const TutorView = () => {
                     <Button
                       variant="success"
                       size="sm"
-                      onClick={() => acceptBooking(booking.enrollmentId)}
-                    >
+                      onClick={() => acceptBooking(booking.enrollmentId)}>
                       <FontAwesomeIcon icon={faUserCheck} /> Accept
                     </Button>
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => rejectBooking(booking.enrollmentId)}
-                    >
+                      onClick={() => rejectBooking(booking.enrollmentId)}>
                       <FontAwesomeIcon icon={faTimesCircle} /> Reject
                     </Button>
                   </>
@@ -554,8 +587,7 @@ const TutorView = () => {
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => removeBooking(booking.enrollmentId)}
-                    >
+                      onClick={() => removeBooking(booking.enrollmentId)}>
                       <FontAwesomeIcon icon={faTrash} /> Remove
                     </Button>
                   </>
@@ -593,8 +625,7 @@ const TutorView = () => {
                 name="category"
                 value={newCourse.category}
                 onChange={handleInputChange}
-                required
-              >
+                required>
                 <option value="">Select Category</option>
                 {Object.keys(categories).map((cat, idx) => (
                   <option key={idx} value={cat}>
@@ -613,8 +644,7 @@ const TutorView = () => {
                 value={newCourse.subcategory}
                 onChange={handleInputChange}
                 disabled={!newCourse.category}
-                required
-              >
+                required>
                 <option value="">Select Subcategory</option>
                 {newCourse.category &&
                   categories[newCourse.category]?.map((subcat, idx) => (
@@ -633,8 +663,7 @@ const TutorView = () => {
                 name="level"
                 value={newCourse.level}
                 onChange={handleInputChange}
-                required
-              >
+                required>
                 <option value="">Select Level</option>
                 <option value="Amateur">Amateur</option>
                 <option value="Intermediate">Intermediate</option>
@@ -696,8 +725,8 @@ const TutorView = () => {
               />
             </Form.Group>
 
-              {/* Description */}
-              <Form.Group className="mb-3">
+            {/* Description */}
+            <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
               <Form.Control
                 type="text"
@@ -724,8 +753,7 @@ const TutorView = () => {
                 !newCourse.maxStudents ||
                 !newCourse.meetingLink ||
                 !newCourse.description
-              }
-            >
+              }>
               Add Course
             </Button>
           </Form>
