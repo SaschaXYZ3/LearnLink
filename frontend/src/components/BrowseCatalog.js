@@ -177,6 +177,8 @@ function BrowseCatalog() {
     setShowModal(false);
   };
 
+
+  
   return (
     <Container className="browse-catalog-page mt-5">
       <Form className="d-flex justify-content-between align-items-center mb-4">
