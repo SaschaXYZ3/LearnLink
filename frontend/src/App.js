@@ -7,7 +7,7 @@ import About from "./components/About";
 import AuthForm from "./components/AuthForm";
 import Testimonials from "./components/testimonials";
 import ContactForm from "./components/ContactForm";
-import Tools from "./components/Tools"; 
+import Tools from "./components/Tools";
 import Forum from "./components/Forum";
 import StudentView from "./components/StudentView";
 import EditProfile from "./components/EditProfile";
@@ -21,6 +21,7 @@ import AnalyticsPage from "./components/AnalyticsPage";
 import ContactEntriesView from "./components/ContactEntriesView";
 import ForumPostsView from "./components/ForumPostsView";
 import ProfileChangesView from "./components/ProfileChangesView";
+import UserLogs from "./components/UserLogs";
 
 function App() {
   const contactFormRef = useRef(null);
@@ -60,8 +61,8 @@ function App() {
         <Route path="/browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/help" element={<Help/>}/>
-        
+        <Route path="/help" element={<Help />} />
+
         {/* Geschützte Routen */}
         <Route
           path="/studentview"
@@ -87,7 +88,32 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/adminlogs"
+          element={
+            <PrivateRoute role="admin">
+              <UserLogs />
+            </PrivateRoute>
+          }
+        />
+        {/* USER LOGS */}
+        <Route
+          path="/studentlogs"
+          element={
+            <PrivateRoute role="student">
+              <UserLogs role="student" />
+            </PrivateRoute>
+          }
+        />
 
+        <Route
+          path="/tutorlogs"
+          element={
+            <PrivateRoute role="tutor">
+              <UserLogs role="tutor" />
+            </PrivateRoute>
+          }
+        />
         {/* Analytics Parent Route */}
         <Route
           path="/analytics"
@@ -95,15 +121,13 @@ function App() {
             <PrivateRoute role="admin">
               <AnalyticsPage />
             </PrivateRoute>
-          }
-        >
+          }>
           {/* Nested Routes for Analytics Subpages */}
           <Route index element={<div>Welcome to Analytics Dashboard</div>} />
           <Route path="contact-entries" element={<ContactEntriesView />} />
           <Route path="forum-posts" element={<ForumPostsView />} />
           <Route path="profile-changes" element={<ProfileChangesView />} />
         </Route>
-
       </Routes>
     </Router>
   );
