@@ -200,10 +200,34 @@ function StudentView() {
                     <strong>Date:</strong> {booking.date} <br />
                     <strong>Time:</strong> {booking.time} <br />
                     <strong>Description:</strong> {booking.description} <br />
+                    <strong>Seats:</strong> {booking.actualStudents}/
+                    {booking.maxStudents} <br />
+                    <strong>Average Tutor Rating:</strong>{" "}
+                    {booking.averageRating ?? "No ratings yet"} ★
+                    <br />
+                    <strong>Your Rating:</strong>{" "}
+                    {booking.userRating ?? "Not rated yet"} ★
                   </Card.Text>
                   <Badge bg={booking.status === 1 ? "success" : "primary"}>
                     {booking.status === 1 ? "Completed" : "Open"}
                   </Badge>
+                  <div className="mt-3">
+                    {booking.status === 1 ? (
+                      <Button
+                        variant="success"
+                        disabled={!!booking.userRating}
+                        onClick={() => {
+                          setSelectedCourse(booking);
+                          setShowModal(true);
+                        }}>
+                        {!!booking.userRating ? "Rated" : "Rate"}
+                      </Button>
+                    ) : (
+                      <Button variant="secondary" disabled>
+                        Rate
+                      </Button>
+                    )}
+                  </div>
                 </Card.Body>
               </Card>
             ))
@@ -212,6 +236,40 @@ function StudentView() {
           )}
         </div>
       </Container>
+      {/* Modal für Bewertung */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Rate {selectedCourse?.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Please rate the course by clicking on the stars below. 1 is the
+            minimum and 5 is the maximum.
+          </p>
+          <div className="rating-container">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={`rating-star ${
+                  star <= (hoverRating || rating) ? "filled" : "empty"
+                }`}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
+                onClick={() => setRating(star)}>
+                ★
+              </span>
+            ))}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleSubmitRating}>
+            Submit Rating
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
