@@ -242,6 +242,7 @@ function StudentView() {
                                 <Card.Body>
                                     <Card.Title>{booking.title}</Card.Title>
                                     <Card.Text>
+                                        <strong>Title:</strong> {booking.courseTitle} <br />
                                         <strong>Category:</strong> {booking.category} <br />
                                         <strong>Tutor:</strong> {booking.tutorName} <br />
                                         <strong>Date:</strong> {booking.date} <br />
