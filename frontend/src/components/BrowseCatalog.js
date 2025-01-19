@@ -57,9 +57,9 @@ function BrowseCatalog() {
           method: "GET",
           headers: isLoggedIn
             ? {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              }
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            }
             : { "Content-Type": "application/json" },
         });
 
@@ -210,32 +210,54 @@ function BrowseCatalog() {
     }
   };
 
-  const handleBooking = async (courseId) => {
-    if (!isLoggedIn) {
-      alert("Bitte loggen Sie sich ein, um Kurse zu buchen!");
-      navigate("/login");
-      return;
-    }
-
+  const handleBooking = async (courseId, maxStudents) => {
     try {
-      const response = await fetch(
+      // Punkteprüfung nur für 1-on-1-Kurse
+      if (maxStudents === 1) {
+        const response = await fetch("http://localhost:5001/api/user/points", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Fehler beim Abrufen der Punkte");
+        }
+  
+        const { points } = await response.json();
+        console.log("Erhaltene Punkte:", points);
+  
+        if (points < 200) {
+          alert(
+            "Sie benötigen mindestens 200 Punkte, um einen 1-on-1-Tutoring zu buchen."
+          );
+          return; // Abbrechen, wenn nicht genügend Punkte vorhanden sind
+        }
+      }
+  
+      // Buchungsanfrage senden
+      const bookingResponse = await fetch(
         `http://localhost:5001/api/book/${courseId}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-      const data = await response.json();
+  
+      const data = await bookingResponse.json();
+  
       if (data.error) {
-        alert(data.error); // Zeigt den Fehler an, falls es einen gibt
+        alert(data.error); // Fehler anzeigen
       } else {
         alert(data.message); // Erfolgsnachricht anzeigen
       }
     } catch (error) {
-      console.error("Fehler beim Buchen:", error);
+      console.error("Fehler beim Buchen:", error.message);
       alert("Fehler beim Buchen des Kurses.");
     }
   };
@@ -313,9 +335,8 @@ function BrowseCatalog() {
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${
-          showFavorites ? "favorite-active" : ""
-        }`}
+        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""
+          }`}
         onClick={() => setShowFavorites(!showFavorites)}
       >
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
@@ -351,8 +372,8 @@ function BrowseCatalog() {
                   <strong>Tutor Rating:</strong>{" "}
                   {tutorRatings[course.tutorId]
                     ? `${tutorRatings[course.tutorId].averageRating?.toFixed(
-                        1
-                      )} (${tutorRatings[course.tutorId].totalRatings} Ratings)`
+                      1
+                    )} (${tutorRatings[course.tutorId].totalRatings} Ratings)`
                     : "No ratings yet"}
                 </Card.Text>
 
@@ -406,9 +427,8 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${
-                    course.maxStudents > 0 ? course.maxStudents : 1
-                  } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
+                    } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"
@@ -439,7 +459,7 @@ function BrowseCatalog() {
                   </OverlayTrigger>
                   <Button
                     className="btn-primary"
-                    onClick={() => handleBooking(course.id)}
+                    onClick={() => handleBooking(course.id, course.maxStudents)}
                     disabled={course.actualStudents === course.maxStudents}
                   >
                     Jetzt buchen
