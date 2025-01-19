@@ -221,14 +221,14 @@ function BrowseCatalog() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-  
+
         if (!response.ok) {
           throw new Error("Fehler beim Abrufen der Punkte");
         }
-  
+
         const { points } = await response.json();
         console.log("Erhaltene Punkte:", points);
-  
+
         if (points < 200) {
           alert(
             "Sie benötigen mindestens 200 Punkte, um einen 1-on-1-Tutoring zu buchen."
@@ -236,7 +236,7 @@ function BrowseCatalog() {
           return; // Abbrechen, wenn nicht genügend Punkte vorhanden sind
         }
       }
-  
+
       // Buchungsanfrage senden
       const bookingResponse = await fetch(
         `http://localhost:5001/api/book/${courseId}`,
@@ -248,9 +248,9 @@ function BrowseCatalog() {
           },
         }
       );
-  
+
       const data = await bookingResponse.json();
-  
+
       if (data.error) {
         alert(data.error); // Fehler anzeigen
       } else {
@@ -420,22 +420,18 @@ function BrowseCatalog() {
                   </Modal.Footer>
                 </Modal>
 
-                <ProgressBar
-                  now={(() => {
-                    // Wenn actualStudents oder maxStudents nicht vorhanden sind, gehe mit einem Default-Wert vor
-                    const actual = course.actualStudents || 0; // Standardwert 0, falls keine Studenten vorhanden sind
-                    const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
-                    return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
-                  })()}
-                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
-                    } Belegt`} // Anzeige der belegten Plätze
-                  variant={
-                    course.actualStudents === course.maxStudents
-                      ? "danger"
-                      : "info"
-                  } // Rote Farbe, wenn der Kurs voll ist
-                  className="mb-3"
-                />
+                
+                <div className="progress-container">
+                  <div className="progress-label">
+                    {`${course.actualStudents || 0}/${course.maxStudents || "∞"} Belegt`}
+                  </div>
+                  <ProgressBar
+                    now={course.maxStudents > 0 ? (course.actualStudents / course.maxStudents) * 100 : 0}
+                    variant={course.actualStudents === course.maxStudents ? "danger" : "info"}
+                    className="mb-3"
+                  />
+                </div>
+
 
                 <div className="button-group">
                   <OverlayTrigger

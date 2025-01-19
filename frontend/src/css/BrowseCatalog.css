@@ -24,6 +24,57 @@ body {
     background-color: rgba(0, 0, 0, 0.2); /* Halbtransparent */
   }
 
+
+  /* Fortschrittsbalken-Wrapper */
+.progress-bar-wrapper {
+    margin: 10px 0;
+    width: 100%;
+}
+
+/* Fortschrittsbalken */
+.progress-bar {
+    position: relative;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    height: 30px; /* Anpassen nach Bedarf */
+    line-height: 30px; /* Text vertikal zentrieren */
+    
+}
+
+/* Fortschrittsbalken-Farbe bei Info (Standard) */
+.progress-bar.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+/* Fortschrittsbalken-Farbe bei Danger (Voll) */
+.progress-bar.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Fortschrittsbalken-Text */
+.progress-bar-text {
+    position: absolute;
+    z-index: 2;
+    color: white;
+}
+
+/* Fortschrittsbalken: Keine Buchungen */
+.no-bookings {
+    text-align: center;
+    font-size: 0.9rem;
+    color: gray;
+    margin-top: 5px;
+}
+
+/* Fortschrittsbalken: Hover-Effekt */
+.progress-bar:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
 /* --- Suchleiste, Filter und Sortierung --- */
 form {
     display: flex;
