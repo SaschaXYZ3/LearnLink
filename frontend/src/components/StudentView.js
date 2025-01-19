@@ -64,6 +64,7 @@ function StudentView() {
     fetchProgress();
   }, []);
 
+  //Fetch all Courses from backend
   useEffect(() => {
     const fetchBookings = async () => {
       const token = localStorage.getItem("token");
@@ -180,7 +181,16 @@ function StudentView() {
             <option value="Completed">Completed</option>
           </select>
         </div>
-
+        <div className="view-toggle mb-3">
+          <Button
+            variant="secondary"
+            onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}>
+            {viewType === "grid"
+              ? "Switch to List View"
+              : "Switch to Grid View"}
+          </Button>
+                    
+        </div>
         {/* Container für die Buchungen */}
         <div
           className={`course-container ${
@@ -208,11 +218,23 @@ function StudentView() {
                     <strong>Your Rating:</strong>{" "}
                     {booking.userRating ?? "Not rated yet"} ★
                   </Card.Text>
-                  <Badge bg={booking.status === 1 ? "success" : "primary"}>
-                    {booking.status === 1 ? "Completed" : "Open"}
+                  <Badge
+                    bg={
+                      booking.bookingStatus === "booked"
+                        ? "primary"
+                        : booking.bookingStatus === "completed"
+                        ? "success"
+                        : booking.bookingStatus === "rejected"
+                        ? "danger"
+                        : booking.bookingStatus === "requested"
+                        ? "warning"
+                        : "secondary"
+                    }>
+                    {booking.bookingStatus.charAt(0).toUpperCase() +
+                      booking.bookingStatus.slice(1)}
                   </Badge>
                   <div className="mt-3">
-                    {booking.status === 1 ? (
+                    {booking.bookingStatus === "completed" ? (
                       <Button
                         variant="success"
                         disabled={!!booking.userRating}
@@ -222,9 +244,13 @@ function StudentView() {
                         }}>
                         {!!booking.userRating ? "Rated" : "Rate"}
                       </Button>
+                    ) : booking.bookingStatus === "requested" ? (
+                      <Button variant="warning" disabled>
+                        Pending Approval
+                      </Button>
                     ) : (
                       <Button variant="secondary" disabled>
-                        Rate
+                        Not Rateable
                       </Button>
                     )}
                   </div>
