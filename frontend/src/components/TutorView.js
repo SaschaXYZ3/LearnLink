@@ -218,7 +218,7 @@ const TutorView = () => {
 
         const participants = await response.json();
         console.log("Fetched participants:", participants);
-
+ 
         setSelectedCourse((prev) => ({
           ...prev,
           participants, // Setze die Teilnehmer nur einmal, wenn die Teilnehmer abgerufen werden
@@ -244,6 +244,8 @@ const TutorView = () => {
     acc[category.label] = subcategories;
     return acc;
   }, {});
+
+  
   /*{
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
