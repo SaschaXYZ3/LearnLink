@@ -254,6 +254,8 @@ body {
     gap: 1rem;
 }
 
+
+
 /* Responsive Anpassungen */
 @media (max-width: 768px) {
     .navbar-custom {

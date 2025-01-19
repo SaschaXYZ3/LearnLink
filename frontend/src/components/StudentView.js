@@ -8,9 +8,9 @@ import {
     Modal,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import "../css/StudentView.css";
+import Calendar from "./Calendar.js";
+import "../css/Calendar.css";
 
 function StudentView() {
     const navigate = useNavigate();
@@ -209,9 +209,7 @@ function StudentView() {
 
             {/* Kalender Integration */}
             <Container className="calendar-section mt-5">
-                <h2>Upcoming Classes</h2>
-                <Calendar onChange={setSelectedDate} value={selectedDate} />
-                <p>Selected Date: {selectedDate.toDateString()}</p>
+                <Calendar />
             </Container>
 
             {/* Filter und Buchungen */}

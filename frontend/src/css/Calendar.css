@@ -1,0 +1,35 @@
+/* Styling for calendar control buttons */
+.rbc-toolbar {
+    display: flex;
+    justify-content: center; /* Zentriere die Steuerung */
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px; /* Abstand zwischen Buttons */
+  }
+  
+  .rbc-toolbar button {
+    background-color: #007bff; /* Blaue Hintergrundfarbe */
+    color: white; /* Weiße Schrift */
+    border: none; /* Keine Rahmen */
+    border-radius: 5px; /* Abgerundete Ecken */
+    padding: 5px 10px; /* Innenabstand */
+    font-size: 14px; /* Schriftgröße */
+    cursor: pointer; /* Handcursor bei Hover */
+    transition: all 0.2s ease; /* Weicher Hover-Effekt */
+  }
+  
+  .rbc-toolbar button:hover {
+    background-color: #0056b3; /* Dunkleres Blau bei Hover */
+  }
+  
+  .rbc-toolbar-label {
+    font-size: 16px; /* Größere Schrift für den Monatsnamen */
+    font-weight: bold;
+    color: #333; /* Dunkelgraue Schrift */
+    margin: 0 10px; /* Abstand zwischen Buttons und Text */
+  }
+  
+  .rbc-btn-group {
+    display: flex; /* Buttons in einer Reihe */
+    gap: 5px; /* Abstand zwischen Buttons */
+  }

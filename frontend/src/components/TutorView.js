@@ -22,11 +22,14 @@ import {
 import "../css/TutorView.css";
 import jwt_decode from "jwt-decode";
 import { Categories, SubCategories, SortOptions } from "../data/categories";
+import Calendar from "./Calendar.js";
+
 
 const TutorView = () => {
   //const { userId } = useContext(UserContext); // Access userId from context
   const [showAddModal, setShowAddModal] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookings, setBookings] = useState([
     { studentName: "John Doe", course: "Python Basics", status: "Pending" },
     {
@@ -218,7 +221,7 @@ const TutorView = () => {
 
         const participants = await response.json();
         console.log("Fetched participants:", participants);
- 
+
         setSelectedCourse((prev) => ({
           ...prev,
           participants, // Setze die Teilnehmer nur einmal, wenn die Teilnehmer abgerufen werden
@@ -245,7 +248,7 @@ const TutorView = () => {
     return acc;
   }, {});
 
-  
+
   /*{
     Coding: ["Python", "JavaScript", "React", "C++", "Java"],
     "Network Technologies": ["CCNA", "Cloud Networking", "Wireless Security"],
@@ -267,10 +270,18 @@ const TutorView = () => {
 
   const addCourse = async () => {
     try {
+
+      const formattedTime = newCourse.time
+        .toISOString()
+        .split("T")[1] // Nimm nur den Zeitanteil nach dem "T"
+        .slice(0, 5); // Extrahiere die ersten 5 Zeichen (HH:MM)
+
       const courseData = {
         ...newCourse,
+        time: formattedTime, // Verwende nur die Uhrzeit
         userId, // Wird benötigt, um den Kurs dem Tutor zuzuordnen
       };
+
       console.log("Userid:", userId);
       console.log("User-Token:", token);
       //const token = localStorage.getItem("token");
@@ -505,6 +516,8 @@ const TutorView = () => {
         </div>
       </Container>
 
+
+
       {/* Modal für Kursdetails */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
@@ -549,6 +562,11 @@ const TutorView = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Kalender Integration */}
+      <Container className="calendar-section mt-5">
+        <Calendar />
+      </Container>
 
       {/* Pending Bookings Section */}
       <Container>

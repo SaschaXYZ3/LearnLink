@@ -22,6 +22,7 @@ import ContactEntriesView from "./components/ContactEntriesView";
 import ForumPostsView from "./components/ForumPostsView";
 import ProfileChangesView from "./components/ProfileChangesView";
 import UserLogs from "./components/UserLogs";
+import Calendar from "./components/Calendar";
 
 function App() {
   const contactFormRef = useRef(null);
@@ -61,6 +62,7 @@ function App() {
         <Route path="/browsecatalog" element={<BrowseCatalog />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/calendarA" element={<Calendar />} />
         <Route path="/help" element={<Help />} />
 
         {/* Geschützte Routen */}
