@@ -9,6 +9,8 @@ function EditProfile() {
     birthDate: "",
     password: "",
   });
+
+  
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isEditing, setIsEditing] = useState(false);
