@@ -57,9 +57,9 @@ function BrowseCatalog() {
           method: "GET",
           headers: isLoggedIn
             ? {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            }
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              }
             : { "Content-Type": "application/json" },
         });
 
@@ -211,6 +211,13 @@ function BrowseCatalog() {
   };
 
   const handleBooking = async (courseId, maxStudents) => {
+    // Überprüfen, ob der Benutzer eingeloggt ist
+    if (!isLoggedIn) {
+      // Benutzer zur Registrierungsseite weiterleiten, wenn er nicht eingeloggt ist
+      alert("Bitte loggen Sie sich ein, um den Kurs zu buchen!");
+      navigate("/register");
+      return;
+    }
     try {
       // Punkteprüfung nur für 1-on-1-Kurse
       if (maxStudents === 1) {
@@ -285,8 +292,7 @@ function BrowseCatalog() {
         />
         <Button
           variant="secondary"
-          onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}
-        >
+          onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}>
           <FontAwesomeIcon icon={viewType === "grid" ? faList : faThLarge} />
         </Button>
 
@@ -294,8 +300,7 @@ function BrowseCatalog() {
         <Form.Select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="mb-3"
-        >
+          className="mb-3">
           {/* Default Anzeige ALLE KATEGORIEN*/}
           <option value="">All categories</option>
 
@@ -310,8 +315,7 @@ function BrowseCatalog() {
         <Form.Select
           value={filterSubCategory}
           onChange={(e) => setFilterSubCategory(e.target.value)}
-          disabled={!filterCategory}
-        >
+          disabled={!filterCategory}>
           {/* Default Anzeige ALLE KATEGORIEN*/}
           <option value="">All subcategories</option>
 
@@ -324,8 +328,7 @@ function BrowseCatalog() {
 
         <Form.Select
           value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-        >
+          onChange={(e) => setSortOption(e.target.value)}>
           {SortOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -335,10 +338,10 @@ function BrowseCatalog() {
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""
-          }`}
-        onClick={() => setShowFavorites(!showFavorites)}
-      >
+        className={`filter-favorites mb-3 ${
+          showFavorites ? "favorite-active" : ""
+        }`}
+        onClick={() => setShowFavorites(!showFavorites)}>
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
         <span className="ms-2">
           <strong>Show only favorites</strong>
@@ -355,14 +358,12 @@ function BrowseCatalog() {
             viewType === "grid"
               ? "d-flex flex-wrap gap-4 justify-content-center"
               : ""
-          }
-        >
+          }>
           {sortedCourses.map((course, index) => (
             <Card
               key={index}
               style={{ width: "20rem" }}
-              className="course-card"
-            >
+              className="course-card">
               <Card.Body>
                 <Card.Title>{course.title}</Card.Title>
                 <Card.Text>
@@ -372,8 +373,8 @@ function BrowseCatalog() {
                   <strong>Tutor Rating:</strong>{" "}
                   {tutorRatings[course.tutorId]
                     ? `${tutorRatings[course.tutorId].averageRating?.toFixed(
-                      1
-                    )} (${tutorRatings[course.tutorId].totalRatings} Ratings)`
+                        1
+                      )} (${tutorRatings[course.tutorId].totalRatings} Ratings)`
                     : "No ratings yet"}
                 </Card.Text>
 
@@ -420,18 +421,26 @@ function BrowseCatalog() {
                   </Modal.Footer>
                 </Modal>
 
-                
                 <div className="progress-container">
                   <div className="progress-label">
-                    {`${course.actualStudents || 0}/${course.maxStudents || "∞"} Belegt`}
+                    {`${course.actualStudents || 0}/${
+                      course.maxStudents || "∞"
+                    } Belegt`}
                   </div>
                   <ProgressBar
-                    now={course.maxStudents > 0 ? (course.actualStudents / course.maxStudents) * 100 : 0}
-                    variant={course.actualStudents === course.maxStudents ? "danger" : "info"}
+                    now={
+                      course.maxStudents > 0
+                        ? (course.actualStudents / course.maxStudents) * 100
+                        : 0
+                    }
+                    variant={
+                      course.actualStudents === course.maxStudents
+                        ? "danger"
+                        : "info"
+                    }
                     className="mb-3"
                   />
                 </div>
-
 
                 <div className="button-group">
                   <OverlayTrigger
@@ -442,8 +451,7 @@ function BrowseCatalog() {
                           ? "Remove from favorites"
                           : "Add to favorites"}
                       </Tooltip>
-                    }
-                  >
+                    }>
                     <Button
                       variant={course.isFavorite ? "danger" : "outline-danger"} // Dynamische Farbe
                       onClick={() => toggleFavorite(course.id)} // Favoritenstatus umschalten
@@ -456,8 +464,7 @@ function BrowseCatalog() {
                   <Button
                     className="btn-primary"
                     onClick={() => handleBooking(course.id, course.maxStudents)}
-                    disabled={course.actualStudents === course.maxStudents}
-                  >
+                    disabled={course.actualStudents === course.maxStudents}>
                     Jetzt buchen
                   </Button>
                 </div>
