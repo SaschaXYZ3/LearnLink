@@ -23,6 +23,18 @@ const AuthForm = () => {
     }
   }, [location.pathname]);
 
+  // Lösche die Eingaben beim Wechsel zwischen Login und Registrierung
+  useEffect(() => {
+    setFormData({
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "student",
+      birthDate: "",
+    });
+  }, [isLogin]);
+
   // Eingabeänderungen verarbeiten
   const handleInputChange = (e) => {
     const { name, value } = e.target;
