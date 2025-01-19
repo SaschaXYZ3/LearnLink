@@ -17,6 +17,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
+    "ics": "^3.8.1",
     "jwt-decode": "^4.0.0",
     "multer": "^1.4.5-lts.1",
     "react": "^18.3.1",

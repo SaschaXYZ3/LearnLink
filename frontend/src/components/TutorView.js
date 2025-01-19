@@ -23,6 +23,7 @@ import "../css/TutorView.css";
 import jwt_decode from "jwt-decode";
 import { Categories, SubCategories, SortOptions } from "../data/categories";
 import Calendar from "./Calendar.js";
+import ExportCalendar from "./ExportCalendar";
 
 
 const TutorView = () => {
@@ -565,7 +566,10 @@ const TutorView = () => {
 
       {/* Kalender Integration */}
       <Container className="calendar-section mt-5">
+        <h2>Upcoming Classes</h2>
         <Calendar />
+        {/* Export Calendar Button */}
+        <ExportCalendar />
       </Container>
 
       {/* Pending Bookings Section */}
