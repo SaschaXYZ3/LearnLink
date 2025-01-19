@@ -200,11 +200,15 @@ function StudentView() {
             {/* Fortschrittsverfolgung */}
             <Container className="progress-section mt-5">
                 <h2>Your Learning Progress</h2>
-                <ProgressBar
-                    now={totalCourses > 0 ? (completedCourses / totalCourses) * 100 : 0}
-                    label={`${completedCourses} of ${totalCourses} completed`}
-                    variant="success"
-                />
+                <div className="custom-progress-bar-wrapper">
+                    <ProgressBar
+                        now={totalCourses > 0 ? (completedCourses / totalCourses) * 100 : 0}
+                        label={`${completedCourses} of ${totalCourses} completed`}
+                        className="custom-progress-bar"
+                        variant="success"
+                        animated
+                    />
+                </div>
             </Container>
 
             {/* Kalender Integration */}

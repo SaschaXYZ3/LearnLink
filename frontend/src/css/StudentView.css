@@ -107,6 +107,33 @@ body {
     margin-bottom: 20px;
 }
 
+/* Wrapper für Progress-Bar */
+.progress-wrapper {
+    width: 80%; /* Breite der Progress-Bar */
+    margin: 0 auto;
+    background-color: #e0e0e0; /* Hintergrund der Progress-Leiste */
+    border-radius: 25px; /* Abgerundete Kanten */
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Schatten für modernes Design */
+}
+
+/* Fortschrittsleiste */
+.progress-bar {
+    height: 30px; /* Höhe der Progress-Bar */
+    width: 50%; /* Beispielwert für den Fortschritt (kann dynamisch geändert werden) */
+    background: linear-gradient(90deg, #4caf50, #81c784); /* Verläufe für modernes Design */
+    border-radius: 25px; /* Abgerundete Kanten */
+    transition: width 0.4s ease-in-out; /* Animation bei Änderungen */
+}
+
+/* Fortschritts-Text */
+.progress-text {
+    margin-top: 10px;
+    font-size: 1.25rem;
+    color: #555;
+    font-weight: bold;
+}
+
 /* Calendar Section - React Calendar Styling angepasst */
 .calendar-section {
     text-align: center;
