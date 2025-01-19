@@ -73,6 +73,9 @@ npm install react-calendar react-datepicker
 
 npm install @mui/material @emotion/react @emotion/styled
 
+npm install canvas-confetti
+
+npm install react-big-calendar
 
 
 ---------
