@@ -20,6 +20,10 @@ body {
     margin: 0 auto;
 }
 
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.2); /* Halbtransparent */
+  }
+
 /* --- Suchleiste, Filter und Sortierung --- */
 form {
     display: flex;
