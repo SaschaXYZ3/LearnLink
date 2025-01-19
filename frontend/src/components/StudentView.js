@@ -26,144 +26,36 @@ function StudentView() {
     const [viewType, setViewType] = useState("list"); // Default is list view
 
     useEffect(() => {
-        const mockBookings = [
-            {
-                id: 1,
-                title: "Python Basics",
-                category: "Coding",
-                instructor: "John Doe",
-                date: "2024-05-10",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 2,
-                title: "Algebra Essentials",
-                category: "Mathematics",
-                instructor: "Alan Turing",
-                date: "2024-05-15",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 3,
-                title: "React for Beginners",
-                category: "Web Development",
-                instructor: "Jane Smith",
-                date: "2024-06-01",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 4,
-                title: "Cybersecurity Basics",
-                category: "IT Security",
-                instructor: "Eve Black",
-                date: "2024-05-20",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 5,
-                title: "Linear Algebra Deep Dive",
-                category: "Mathematics",
-                instructor: "Isaac Newton",
-                date: "2024-07-05",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 6,
-                title: "Introduction to Machine Learning",
-                category: "Artificial Intelligence",
-                instructor: "Andrew Ng",
-                date: "2024-08-15",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 7,
-                title: "Data Structures and Algorithms",
-                category: "Computer Science",
-                instructor: "Grace Hopper",
-                date: "2024-09-01",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 8,
-                title: "Cloud Computing Basics",
-                category: "Networking",
-                instructor: "Jeff Bezos",
-                date: "2024-04-30",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 9,
-                title: "Advanced JavaScript",
-                category: "Web Development",
-                instructor: "Brendan Eich",
-                date: "2024-06-10",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 10,
-                title: "Introduction to Blockchain",
-                category: "Technology",
-                instructor: "Satoshi Nakamoto",
-                date: "2024-07-20",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 11,
-                title: "Graphic Design Essentials",
-                category: "Design",
-                instructor: "Paul Rand",
-                date: "2024-06-25",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 12,
-                title: "Ethical Hacking",
-                category: "IT Security",
-                instructor: "Kevin Mitnick",
-                date: "2024-08-05",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 13,
-                title: "Basics of SQL",
-                category: "Databases",
-                instructor: "Donald Chamberlin",
-                date: "2024-05-18",
-                status: "Completed",
-                userRating: null,
-            },
-            {
-                id: 14,
-                title: "Statistics for Data Science",
-                category: "Mathematics",
-                instructor: "Florence Nightingale",
-                date: "2024-06-15",
-                status: "Booked",
-                userRating: null,
-            },
-            {
-                id: 15,
-                title: "Introduction to Photography",
-                category: "Art",
-                instructor: "Ansel Adams",
-                date: "2024-07-01",
-                status: "Completed",
-                userRating: null,
-            },
-        ];
-        setBookings(mockBookings);
+        const fetchBookings = async () => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.warn("Kein Token gefunden. Bitte loggen Sie sich ein.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5001/api/student/bookings", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Fehler beim Abrufen der Buchungen");
+                }
+
+                const data = await response.json();
+                console.log("Fetched bookings:", data); 
+                setBookings(data); // Gebuchte Kurse in den State speichern
+            } catch (error) {
+                console.error("Fehler beim Laden der Buchungen:", error.message);
+            }
+        };
+
+        fetchBookings();
     }, []);
 
     /*const handleLogout = () => {
@@ -180,20 +72,35 @@ function StudentView() {
 
 
     // Bewertung abschicken
-    const handleSubmitRating = () => {
+    const handleSubmitRating = async () => {
         if (rating < 1) {
-            alert("Bitte mindestens 1 Stern vergeben.");
+            alert("Please select at least 1 star.");
             return;
         }
-        const updatedBookings = bookings.map((booking) =>
-            booking.id === selectedCourse.id ? { ...booking, userRating: rating } : booking
-        );
-        console.log(`Bewertung für Kurs ${selectedCourse.title}: ${rating} Sterne`);
-        setBookings(updatedBookings);
-        setShowModal(false);
-        setRating(0); // Reset the rating
-    };
 
+        try {
+            const response = await fetch(`http://localhost:5001/api/courses/${selectedCourse.courseId}/review`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ rating, comment: "Great course!" }), // Replace with dynamic comment
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to submit rating.");
+            }
+
+            alert("Rating submitted successfully!");
+            setShowModal(false);
+            setRating(0);
+            // Optionally, refetch the course data to update the ratings
+        } catch (error) {
+            console.error("Error submitting rating:", error.message);
+            alert("Error submitting rating.");
+        }
+    };
     return (
         <div className="studentview-page">
             {/* Hero Section */}
@@ -235,7 +142,7 @@ function StudentView() {
                         <option value="Booked">Open</option>
                         <option value="Completed">Completed</option>
                     </select>
-                </div> 
+                </div>
 
                 {/* View Toggle Button */}
                 <div className="view-toggle mb-3">
@@ -249,38 +156,41 @@ function StudentView() {
 
 
                 {/* Container für die Buchungen */}
-                <div className={viewType === "grid" ? "d-flex flex-wrap gap-3" : ""}>
-                    {filteredBookings.length > 0 ? (
+                <div className={`course-container ${viewType === "grid" ? "d-flex flex-wrap gap-3" : ""}`}>
+                    {Array.isArray(filteredBookings) && filteredBookings.length > 0 ? (
                         filteredBookings.map((booking) => (
-                            <Card key={booking.id} className="course-card mb-3" style={{ width: viewType === "grid" ? "20rem" : "100%" }}>
+                            <Card
+                                key={booking.bookingId} // Eindeutiger Schlüssel für jeden Eintrag
+                                className="course-card mb-3"
+                                style={{ width: viewType === "grid" ? "20rem" : "100%" }}
+                            >
                                 <Card.Body>
                                     <Card.Title>{booking.title}</Card.Title>
                                     <Card.Text>
                                         <strong>Category:</strong> {booking.category} <br />
                                         <strong>Instructor:</strong> {booking.instructor} <br />
                                         <strong>Date:</strong> {booking.date} <br />
-                                        {booking.userRating !== null && (
-                                            <strong>
-                                                Your Rating: {booking.userRating} ★
-                                            </strong>
-                                        )}
+                                        <strong>Time:</strong> {booking.time} <br />
+                                        <strong>Description:</strong> {booking.description} <br />
+                                        <strong>Seats:</strong> {booking.actualStudents}/{booking.maxStudents} <br />
+                                        <strong>Average Tutor Rating:</strong> {booking.averageRating ?? "No ratings yet"} ★
+                                        <br />
+                                        <strong>Your Rating:</strong> {booking.userRating ?? "Not rated yet"} ★
                                     </Card.Text>
-                                    <Badge
-                                        bg={booking.status === "Completed" ? "success" : "primary"}
-                                    >
-                                        {booking.status}
+                                    <Badge bg={booking.status === 1 ? "success" : "primary"}>
+                                        {booking.status === 1 ? "Completed" : "Open"}
                                     </Badge>
                                     <div className="mt-3">
-                                        {booking.status === "Completed" ? (
+                                        {booking.status === 1 ? (
                                             <Button
                                                 variant="success"
-                                                disabled={booking.status === "Completed" && booking.userRating !== null}
+                                                disabled={!!booking.userRating}
                                                 onClick={() => {
                                                     setSelectedCourse(booking);
                                                     setShowModal(true);
                                                 }}
                                             >
-                                                {booking.userRating !== null ? "Rated" : "Rate"}
+                                                {!!booking.userRating ? "Rated" : "Rate"}
                                             </Button>
                                         ) : (
                                             <Button variant="secondary" disabled>

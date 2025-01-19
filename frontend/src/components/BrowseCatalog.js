@@ -43,29 +43,47 @@ function BrowseCatalog() {
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
   const token = localStorage.getItem("token");
 
+
   // useEffect, um Daten vom Backend zu laden
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:5001/api/courses");
-        /*headers: {
-     Authorization: `Bearer ${localStorage.getItem("token")}`,
-     "Content-Type": "application/json",
-   },
- });
- */
+        const endpoint = isLoggedIn
+          ? "http://localhost:5001/api/courses"
+          : "http://localhost:5001/api/public/courses";
+  
+        const response = await fetch(endpoint, {
+          method: "GET",
+          headers: isLoggedIn
+            ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+            : { "Content-Type": "application/json" },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Fehler beim Abrufen der Kurse.");
+        }
+  
         const data = await response.json();
-        setCourses(data);
-        setIsLoading(false);
+  
+        // Für eingeloggte Benutzer `isFavorite` umwandeln
+        const transformedData = data.map((course) => ({
+          ...course,
+          isFavorite: course.isFavorite === 1 || course.isFavorite === true, // Für eingeloggte Benutzer
+        }));
+  
+        setCourses(transformedData);
       } catch (err) {
-        console.error("Error fetching courses: ", err);
+        console.error("Fehler beim Abrufen der Kurse:", err.message);
         setError("Fehler beim Laden der Kursdaten.");
+      } finally {
         setIsLoading(false);
       }
     };
+  
     fetchCourses();
-  }, []); // Leeres Array stellt sicher, dass der Effekt nur einmal ausgeführt wird
+  }, [token, isLoggedIn]);
+
 
   // Dynamically filter subcategories based on selected category
   const availableSubCategories = filterCategory
@@ -103,46 +121,52 @@ function BrowseCatalog() {
 
   const toggleFavorite = async (courseId) => {
     if (!isLoggedIn) {
-      alert("Please log in to add courses to your favorites!");
-      navigate("/register");
+      alert("Bitte loggen Sie sich ein, um Kurse zu favorisieren!");
+      navigate("/login");
       return;
     }
-
+  
     try {
-      // API-Aufruf zum Aktualisieren des Favoritenstatus
       const response = await fetch(
         `http://localhost:5001/api/courses/${courseId}/favorite`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${"token"}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({}),
         }
       );
-
-      // Überprüfen, ob die Anfrage erfolgreich war
+  
       if (!response.ok) {
-        throw new Error(`Fehler: ${response.status}`);
+        throw new Error("Fehler beim Aktualisieren des Favoritenstatus");
       }
-
-      const data = await response.json(); // Antwortdaten parsen
-
-      // Favoritenstatus im State aktualisieren
-      const updatedCourses = courses.map((course) =>
-        course.id === courseId
-          ? { ...course, isFavorite: data.isFavorite }
-          : course
+  
+      const { isFavorite } = await response.json();
+  
+      // Zustand aktualisieren
+      setCourses((prevCourses) =>
+        prevCourses.map((course) =>
+          course.id === courseId
+            ? { ...course, isFavorite } // Favoritenstatus aktualisieren
+            : course
+        )
       );
-      setCourses(updatedCourses);
     } catch (err) {
-      console.error("Fehler beim Aktualisieren des Favoritenstatus: ", err);
+      console.error("Fehler beim Aktualisieren des Favoritenstatus:", err);
       alert("Fehler beim Aktualisieren des Favoritenstatus.");
     }
   };
 
+
   const handleBooking = async (courseId) => {
+
+    if (!isLoggedIn) {
+      alert("Bitte loggen Sie sich ein, um Kurse zu buchen!");
+      navigate("/login");
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:5001/api/book/${courseId}`,
@@ -178,7 +202,7 @@ function BrowseCatalog() {
   };
 
 
-  
+
   return (
     <Container className="browse-catalog-page mt-5">
       <Form className="d-flex justify-content-between align-items-center mb-4">
@@ -216,7 +240,7 @@ function BrowseCatalog() {
         <Form.Select
           value={filterSubCategory}
           onChange={(e) => setFilterSubCategory(e.target.value)}
-          disbled={!filterCategory}
+          disabled={!filterCategory}
         >
           {/* Default Anzeige ALLE KATEGORIEN*/}
           <option value="">All subcategories</option>
@@ -241,13 +265,12 @@ function BrowseCatalog() {
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${
-          showFavorites ? "favorite-active" : ""
-        }`}
+        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""
+          }`}
         onClick={() => setShowFavorites(!showFavorites)}
       >
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
-        <span className="ms-2 mt-3 mb-3">
+        <span className="ms-2">
           <strong>Show only favorites</strong>
         </span>
       </div>
@@ -328,9 +351,8 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${
-                    course.maxStudents > 0 ? course.maxStudents : 1
-                  } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
+                    } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"
@@ -342,13 +364,15 @@ function BrowseCatalog() {
                 <div className="button-group">
                   <OverlayTrigger
                     placement="top"
-                    overlay={<Tooltip>Zu Favoriten hinzufügen</Tooltip>}
+                    overlay={<Tooltip>{course.isFavorite ? "Remove from favorites" : "Add to favorites"}</Tooltip>}
                   >
                     <Button
-                      variant={course.isFavorite ? "danger" : "outline-danger"}
-                      onClick={() => toggleFavorite(course.id)}
+                      variant={course.isFavorite ? "danger" : "outline-danger"} // Dynamische Farbe
+                      onClick={() => toggleFavorite(course.id)} // Favoritenstatus umschalten
                     >
-                      <FontAwesomeIcon icon={faSolidHeart} />
+                      <FontAwesomeIcon
+                        icon={course.isFavorite ? faSolidHeart : faRegularHeart} // Herzstatus anzeigen
+                      />
                     </Button>
                   </OverlayTrigger>
                   <Button
