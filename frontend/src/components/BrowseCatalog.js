@@ -166,7 +166,7 @@ function BrowseCatalog() {
     } else if (sortOption === "title") {
       return a.title.localeCompare(b.title);
     } else if (sortOption === "tutor") {
-      return a.tutor.localeCompare(b.title);
+      return a.tutor.localeCompare(b.tutor);
     }
     return 0;
   });
