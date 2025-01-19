@@ -3,7 +3,7 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { Outlet, NavLink } from "react-router-dom";
 
 const AnalyticsPage = () => {
-  return (
+  return ( 
     <div className="d-flex" style={{ height: "100vh" }}>
       {/* Sidebar */}
       <Nav

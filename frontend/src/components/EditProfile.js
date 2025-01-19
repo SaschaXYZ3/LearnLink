@@ -85,7 +85,7 @@ function EditProfile() {
   const handleCurrentPasswordChange = (e) => {
     setCurrentPassword(e.target.value);
   };
-
+ 
   // Aktualisiere das neue Passwort
   const handleNewPasswordChange = (e) => {
     setNewPassword(e.target.value);

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Form } from "react-bootstrap";
+import { Table, Button, Form, Modal } from "react-bootstrap";
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [resetPasswordValue, setResetPasswordValue] = useState("");
+  const [changes, setChanges] = useState({});
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -41,112 +44,218 @@ function AdminPanel() {
     fetchUsers();
   }, []);
 
-  const handleDeleteUser = async (userId) => {
+  const handleEditField = (userId, field, value) => {
+    setChanges((prevChanges) => ({
+      ...prevChanges,
+      [userId]: {
+        ...prevChanges[userId],
+        [field]: value,
+      },
+    }));
+  };
+
+  // SAVE USER DATA CHANGES
+  const saveAllChanges = async () => {
     const token = localStorage.getItem("token");
+    const updates = Object.entries(changes);
+
+    if (updates.length === 0) {
+      alert("No changes to save.");
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:5001/admin/users/${userId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      for (const [userId, fields] of updates) {
+        // Den vollständigen Benutzerdatensatz aus `users` abrufen
+        const user = users.find((u) => u.id === parseInt(userId, 10));
 
-      if (!response.ok) throw new Error("Failed to delete user");
+        if (!user) {
+          alert(`User with ID ${userId} not found.`);
+          continue;
+        }
 
-      setUsers((prev) => prev.filter((user) => user.id !== userId));
+        // Änderungen mit bestehenden Werten kombinieren
+        const payload = {
+          username: fields.username || user.username,
+          email: fields.email || user.email,
+          birthDate: fields.birthDate || user.birthDate,
+        };
+
+        const response = await fetch(
+          `http://localhost:5001/admin/user/${userId}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(`Error updating user ${userId}: ${errorData.error}`);
+          continue;
+        }
+      }
+
+      alert("All changes saved successfully.");
+      setChanges({});
     } catch (error) {
-      console.error("Error deleting user:", error);
+      alert("Network error occurred while saving changes.");
     }
   };
 
-  const handleResetPassword = async (userId) => {
+  //DELETE USER
+  const deleteUser = async (userId) => {
     const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`http://localhost:5001/admin/users/${userId}/reset-password`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ newPassword: resetPasswordValue }),
-      });
 
-      if (!response.ok) throw new Error("Failed to reset password");
-      alert("Password reset successfully!");
-    } catch (error) {
-      console.error("Error resetting password:", error);
+    if (!token) {
+      alert("No token found, please login.");
+      return;
     }
-  };
 
-  const handleEditUsername = async (userId, newUsername) => {
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://localhost:5001/admin/users/${userId}/edit-username`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ newUsername }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update username");
-
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, username: newUsername } : user))
+      const response = await fetch(
+        `http://localhost:5001/admin/user/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error deleting user ${userId}: ${errorData.error}`);
+        return;
+      }
+
+      // Benutzer aus der Liste entfernen
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      alert("User deleted successfully.");
     } catch (error) {
-      console.error("Error updating username:", error);
+      alert("Network error occurred while deleting user.");
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  // PASSWORD RESET
+  const handleResetPassword = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("No token found, please login.");
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      alert("Password must be at least 6 characters long");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5001/admin/user/${selectedUserId}/reset-password`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ newPassword }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(
+          `Error resetting password for user ${selectedUserId}: ${errorData.error}`
+        );
+        return;
+      }
+
+      alert("Password reset successfully.");
+      setShowResetModal(false);
+      setNewPassword(""); // Reset password field
+
+      // Benutzerinformationen erneut abrufen
+      const updatedUsersResponse = await fetch("http://localhost:5001/admin", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const updatedUsers = await updatedUsersResponse.json();
+      setUsers(updatedUsers);
+    } catch (error) {
+      alert("Network error occurred while resetting the password.");
+    }
+  };
 
   return (
-    <div>
-      <h1>Admin Panel</h1>
-      <Form className="mb-3">
-        <Form.Group controlId="resetPassword">
-          <Form.Label>Default Password</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter default password"
-            value={resetPasswordValue}
-            onChange={(e) => setResetPasswordValue(e.target.value)}
-          />
-        </Form.Group>
-      </Form>
-      <Table striped bordered hover>
+    <div className="p-5">
+      <Table Table striped bordered hover className="custom-table">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Birth Date</th>
-            <th>Actions</th>
+          <tr className="text-center custom-header">
+            <th style={{ padding: "15px" }}>ID</th>
+            <th style={{ padding: "15px" }}>Username</th>
+            <th style={{ padding: "15px" }}>Email</th>
+            <th style={{ padding: "15px" }}>Role</th>
+            <th style={{ padding: "15px" }}>Birth Date</th>
+            <th style={{ padding: "15px" }}>Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center">
           {users.map((user) => (
-            <tr key={user.id}>
+            <tr key={user.id} >
               <td>{user.id}</td>
               <td>
                 <input
                   type="text"
                   defaultValue={user.username}
-                  onBlur={(e) => handleEditUsername(user.id, e.target.value)}
+                  onChange={(e) =>
+                    handleEditField(user.id, "username", e.target.value)
+                  }
                 />
               </td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
-              <td>{user.birthDate}</td>
               <td>
-                <Button variant="danger" onClick={() => handleDeleteUser(user.id)}>
-                  Delete
-                </Button>{" "}
+                <input
+                  type="email"
+                  defaultValue={user.email}
+                  onChange={(e) =>
+                    handleEditField(user.id, "email", e.target.value)
+                  }
+                />
+              </td>
+              <td>
+                <p>{user.role}</p>
+              </td>
+              <td>
+                <input
+                  type="date"
+                  defaultValue={user.birthDate}
+                  onChange={(e) =>
+                    handleEditField(user.id, "birthDate", e.target.value)
+                  }
+                />
+              </td>
+              <td>
                 <Button
-                  variant="primary"
-                  onClick={() => handleResetPassword(user.id)}
+                  className="mb-3"
+                  variant="danger"
+                  onClick={() => deleteUser(user.id)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="warning"
+                  className="mb-3"
+                  onClick={() => {
+                    setSelectedUserId(user.id);
+                    setShowResetModal(true);
+                  }}
                 >
                   Reset Password
                 </Button>
@@ -155,6 +264,40 @@ function AdminPanel() {
           ))}
         </tbody>
       </Table>
+
+      <div className="text-center">
+        <Button className="p-3 m-3" variant="primary" onClick={saveAllChanges}>
+          <strong>Save All Changes</strong>
+        </Button>
+      </div>
+
+      {/* Modal zum Zurücksetzen des Passworts */}
+      <Modal show={showResetModal} onHide={() => setShowResetModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Reset Password</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formNewPassword">
+              <Form.Label>New Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowResetModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleResetPassword}>
+            Reset Password
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
