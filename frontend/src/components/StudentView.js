@@ -181,27 +181,15 @@ function StudentView() {
             <option value="Completed">Completed</option>
           </select>
         </div>
-        <div className="view-toggle mb-3">
-          <Button
-            variant="secondary"
-            onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}>
-            {viewType === "grid"
-              ? "Switch to List View"
-              : "Switch to Grid View"}
-          </Button>
-                    
-        </div>
+
+
         {/* Container für die Buchungen */}
-        <div
-          className={`course-container ${
-            viewType === "grid" ? "d-flex flex-wrap gap-3" : ""
-          }`}>
+        <div className="d-flex flex-wrap gap-3">
           {Array.isArray(filteredBookings) && filteredBookings.length > 0 ? (
             filteredBookings.map((booking) => (
               <Card
                 key={booking.bookingId}
-                className="course-card mb-3"
-                style={{ width: viewType === "grid" ? "20rem" : "100%" }}>
+                className="course-card mb-3">
                 <Card.Body>
                   <Card.Title>{booking.title}</Card.Title>
                   <Card.Text>
