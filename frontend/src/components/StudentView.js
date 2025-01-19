@@ -23,6 +23,7 @@ function StudentView() {
     const [selectedCourse, setSelectedCourse] = useState(null); // Ausgewählter Kurs für die Bewertung
     const [rating, setRating] = useState(0); // Bewertung (1 bis 5 Sterne)
     const [hoverRating, setHoverRating] = useState(0); // Für Hover-Effekte
+    const [tutorRatings, setTutorRatings] = useState({});
     const token = localStorage.getItem("token");
 
     // Fortschrittsdaten abrufen
@@ -61,7 +62,7 @@ function StudentView() {
         };
 
         fetchProgress();
-    }, []);
+    }, [token]);
 
     //Fetch all Courses from backend
     useEffect(() => {
@@ -97,7 +98,40 @@ function StudentView() {
         };
 
         fetchBookings();
-    }, []);
+    }, [token]);
+
+
+    useEffect(() => {
+        const fetchTutorRatings = async () => {
+            try {
+                const response = await fetch("http://localhost:5001/api/tutor/ratings", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`, // Optional, falls der Endpunkt geschützt ist
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Fehler beim Abrufen der Tutor-Ratings");
+                }
+
+                const data = await response.json();
+
+                // Transformiere die Daten in ein Objekt, um schnellen Zugriff zu ermöglichen
+                const ratingsMap = data.reduce((acc, tutor) => {
+                    acc[tutor.tutorId] = tutor.averageRating;
+                    return acc;
+                }, {});
+
+                setTutorRatings(ratingsMap);
+            } catch (error) {
+                console.error("Fehler beim Laden der Tutor-Ratings:", error.message);
+            }
+        };
+
+        fetchTutorRatings();
+    }, [token]);
 
     // Kursstatus filtern
     const filteredBookings = bookings.filter((booking) => {
@@ -209,14 +243,16 @@ function StudentView() {
                                     <Card.Title>{booking.title}</Card.Title>
                                     <Card.Text>
                                         <strong>Category:</strong> {booking.category} <br />
-                                        <strong>Instructor:</strong> {booking.instructor} <br />
+                                        <strong>Tutor:</strong> {booking.tutorName} <br />
                                         <strong>Date:</strong> {booking.date} <br />
                                         <strong>Time:</strong> {booking.time} <br />
                                         <strong>Description:</strong> {booking.description} <br />
                                         <strong>Seats:</strong> {booking.actualStudents}/
                                         {booking.maxStudents} <br />
                                         <strong>Average Tutor Rating:</strong>{" "}
-                                        {booking.averageRating ?? "No ratings yet"} ★
+                                        {tutorRatings[booking.tutorId]
+                                            ? `${tutorRatings[booking.tutorId].toFixed(1)} ★`
+                                            : "No ratings yet"}
                                         <br />
                                         <strong>Your Rating:</strong>{" "}
                                         {booking.userRating ?? "Not rated yet"} ★
