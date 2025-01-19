@@ -102,9 +102,13 @@ function StudentView() {
   }, []);
 
   // Kursstatus filtern
-  const filteredBookings = bookings.filter((booking) =>
-    filterStatus ? booking.status === filterStatus : true
-  );
+  const filteredBookings = bookings.filter((booking) => {
+    // Keine Filterung, wenn kein Status ausgewählt ist
+    if (!filterStatus) return true;
+  
+    // Prüfe, ob der bookingStatus dem ausgewählten Filter entspricht
+    return booking.bookingStatus.toLowerCase() === filterStatus.toLowerCase();
+  });
 
   // Bewertung abschicken
   const handleSubmitRating = async () => {
@@ -177,8 +181,10 @@ function StudentView() {
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}>
             <option value="">All Courses</option>
-            <option value="Booked">Open</option>
+            <option value="Booked">Booked</option>
             <option value="Completed">Completed</option>
+            <option value="Requested">Requested</option>
+            <option value="Rejected">Rejected</option>
           </select>
         </div>
 
