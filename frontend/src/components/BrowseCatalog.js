@@ -38,11 +38,11 @@ function BrowseCatalog() {
   const [showFavorites, setShowFavorites] = useState(false); // State für favoriten
   const [showModal, setShowModal] = useState(false); // Modal anzeigen
   const [selectedCourse, setSelectedCourse] = useState(null); // Ausgewählter Post für das Modal
+  const [tutorRatings, setTutorRatings] = useState({}); // Zustand für Tutor-Ratings
 
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem("token"); // Überprüfen, ob Benutzer angemeldet ist
   const token = localStorage.getItem("token");
-
 
   // useEffect, um Daten vom Backend zu laden
   useEffect(() => {
@@ -52,26 +52,29 @@ function BrowseCatalog() {
         const endpoint = isLoggedIn
           ? "http://localhost:5001/api/courses"
           : "http://localhost:5001/api/public/courses";
-  
+
         const response = await fetch(endpoint, {
           method: "GET",
           headers: isLoggedIn
-            ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+            ? {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              }
             : { "Content-Type": "application/json" },
         });
-  
+
         if (!response.ok) {
           throw new Error("Fehler beim Abrufen der Kurse.");
         }
-  
+
         const data = await response.json();
-  
+
         // Für eingeloggte Benutzer `isFavorite` umwandeln
         const transformedData = data.map((course) => ({
           ...course,
           isFavorite: course.isFavorite === 1 || course.isFavorite === true, // Für eingeloggte Benutzer
         }));
-  
+
         setCourses(transformedData);
       } catch (err) {
         console.error("Fehler beim Abrufen der Kurse:", err.message);
@@ -80,10 +83,51 @@ function BrowseCatalog() {
         setIsLoading(false);
       }
     };
-  
+
     fetchCourses();
   }, [token, isLoggedIn]);
 
+  useEffect(() => {
+    const fetchTutorRatings = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5001/api/tutor/ratings",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Fehler beim Abrufen der Tutor-Ratings");
+        }
+
+        const data = await response.json();
+        const ratingsMap = data.reduce((acc, rating) => {
+          acc[rating.tutorId] = {
+            averageRating: rating.averageRating || 0,
+            totalRatings: rating.totalRatings || 0,
+          };
+          return acc;
+        }, {});
+
+        // Kurse aktualisieren und Ratings hinzufügen
+        setCourses((prevCourses) =>
+          prevCourses.map((course) => ({
+            ...course,
+            ...ratingsMap[course.userId],
+          }))
+        );
+      } catch (error) {
+        console.error("Fehler beim Laden der Tutor-Ratings:", error.message);
+      }
+    };
+
+    fetchTutorRatings();
+  }, [token]);
 
   // Dynamically filter subcategories based on selected category
   const availableSubCategories = filterCategory
@@ -92,18 +136,24 @@ function BrowseCatalog() {
 
   // Filter logic for courses
   const filteredCourses = courses.filter((course) => {
-    const matchesSearchTerm = course.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesSearchTerm =
+      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.subcategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.tutor.toLowerCase().includes(searchTerm.toLowerCase()); // Hinzufügen der Tutorensuche
+
     const matchesCategory = filterCategory
       ? course.category === filterCategory
       : true;
+
     const matchesSubCategory = filterSubCategory
       ? course.subcategory === filterSubCategory
       : true;
+
     const matchesFavorites = showFavorites ? course.isFavorite : true;
+
     return (
-      matchesSearchTerm &&
+      matchesSearchTerm && // Jetzt Titel oder Tutorname
       matchesCategory &&
       matchesSubCategory &&
       matchesFavorites
@@ -115,6 +165,8 @@ function BrowseCatalog() {
       return b.averageRating - a.averageRating;
     } else if (sortOption === "title") {
       return a.title.localeCompare(b.title);
+    } else if (sortOption === "tutor") {
+      return a.tutor.localeCompare(b.title);
     }
     return 0;
   });
@@ -125,7 +177,7 @@ function BrowseCatalog() {
       navigate("/login");
       return;
     }
-  
+
     try {
       const response = await fetch(
         `http://localhost:5001/api/courses/${courseId}/favorite`,
@@ -137,13 +189,13 @@ function BrowseCatalog() {
           },
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Fehler beim Aktualisieren des Favoritenstatus");
       }
-  
+
       const { isFavorite } = await response.json();
-  
+
       // Zustand aktualisieren
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
@@ -158,9 +210,7 @@ function BrowseCatalog() {
     }
   };
 
-
   const handleBooking = async (courseId) => {
-
     if (!isLoggedIn) {
       alert("Bitte loggen Sie sich ein, um Kurse zu buchen!");
       navigate("/login");
@@ -200,8 +250,6 @@ function BrowseCatalog() {
     setSelectedCourse(null);
     setShowModal(false);
   };
-
-
 
   return (
     <Container className="browse-catalog-page mt-5">
@@ -265,8 +313,9 @@ function BrowseCatalog() {
       </Form>
 
       <div
-        className={`filter-favorites mb-3 ${showFavorites ? "favorite-active" : ""
-          }`}
+        className={`filter-favorites mb-3 ${
+          showFavorites ? "favorite-active" : ""
+        }`}
         onClick={() => setShowFavorites(!showFavorites)}
       >
         <FontAwesomeIcon icon={showFavorites ? faSolidHeart : faRegularHeart} />
@@ -298,11 +347,13 @@ function BrowseCatalog() {
                 <Card.Text>
                   <strong>Category:</strong> {course.category} <br />
                   <strong>Subcategory:</strong> {course.subcategory} <br />
+                  <strong>Tutor:</strong> {course.tutor} <br />
                   <strong>Tutor Rating:</strong>{" "}
-                  {course.averageRating?.toFixed(1)} <br />
-                  <br />
-                  <FontAwesomeIcon icon={faStar} style={{ color: "#FFD700" }} />
-                  ({course.course_reviews?.length || 0} Ratings)
+                  {tutorRatings[course.tutorId]
+                    ? `${tutorRatings[course.tutorId].averageRating?.toFixed(
+                        1
+                      )} (${tutorRatings[course.tutorId].totalRatings} Ratings)`
+                    : "No ratings yet"}
                 </Card.Text>
 
                 {/* Button for description */}
@@ -332,6 +383,10 @@ function BrowseCatalog() {
                       {selectedCourse?.averageRating?.toFixed(1)}
                     </p>
                     <p>
+                      <strong>Tutor:</strong>{" "}
+                      {selectedCourse?.tutor || "Undefined"}
+                    </p>
+                    <p>
                       <strong>Description:</strong>{" "}
                       {selectedCourse?.description ||
                         "No description available."}
@@ -351,8 +406,9 @@ function BrowseCatalog() {
                     const max = course.maxStudents > 0 ? course.maxStudents : 1; // Standardwert 1, falls keine max. Anzahl an Studenten gesetzt ist
                     return Math.min(Math.max((actual / max) * 100, 0), 100); // Berechnung des Prozentsatzes, der zwischen 0 und 100 liegt
                   })()}
-                  label={`${course.actualStudents || 0}/${course.maxStudents > 0 ? course.maxStudents : 1
-                    } Belegt`} // Anzeige der belegten Plätze
+                  label={`${course.actualStudents || 0}/${
+                    course.maxStudents > 0 ? course.maxStudents : 1
+                  } Belegt`} // Anzeige der belegten Plätze
                   variant={
                     course.actualStudents === course.maxStudents
                       ? "danger"
@@ -364,7 +420,13 @@ function BrowseCatalog() {
                 <div className="button-group">
                   <OverlayTrigger
                     placement="top"
-                    overlay={<Tooltip>{course.isFavorite ? "Remove from favorites" : "Add to favorites"}</Tooltip>}
+                    overlay={
+                      <Tooltip>
+                        {course.isFavorite
+                          ? "Remove from favorites"
+                          : "Add to favorites"}
+                      </Tooltip>
+                    }
                   >
                     <Button
                       variant={course.isFavorite ? "danger" : "outline-danger"} // Dynamische Farbe
